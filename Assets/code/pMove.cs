@@ -15,23 +15,41 @@ public class pMove : MonoBehaviour {
 
 	private Vector3 velo;
 	private Vector3 tarVelo;
+	private string id;
 
 
 	// Use this for initialization
 	void Start () {
+		id = GetComponent<objT>().id.ToString();
 		
 	}
+
+
 	
 	// Update is called once per frame
 	void Update () {
 		move();
+		if(Input.GetButton("Joystick"+id+"Button1") && kick()) kickFX();
+	}
+
+	bool kick(){ //return true if you hit
+		bool r = false;
+	
+		return r;
+	}
+
+	void kickFX(){
+
 	}
 
 	void move(){
 		//naive
 		//transform.position += new Vector3(Input.GetAxis("HorizontalJ") * mSpeed,0f,Input.GetAxis("VerticalJ") * mSpeed);
 
-		tarVelo = new Vector3(Input.GetAxis("HorizontalJ") * mSpeed,0,Input.GetAxis("VerticalJ") * mSpeed);
+		Vector3 joy = new Vector3(Input.GetAxis("HorizontalJ" + id),
+			                    0,Input.GetAxis("VerticalJ"  + id));
+
+		tarVelo = new Vector3(joy.x * mSpeed,0,joy.z * mSpeed);
 		
 		if(velo.x * tarVelo.x < 0){
 			velo = new Vector3(0,0,velo.z);
@@ -43,8 +61,8 @@ public class pMove : MonoBehaviour {
 		tarVelo += new Vector3(velo.x == 0 ? 1000 * tarVelo.x * Time.deltaTime : 0,0, velo.z == 0 ? 1000 * tarVelo.z * Time.deltaTime : 0); //slam
 		
 		//velo = Vector3.Lerp(velo,tarVelo,Time.deltaTime * rampFactor); no drag
-		float dragH = (Input.GetAxis("HorizontalJ") == 0 ? (Input.GetAxis("VerticalJ")   == 0 ? sqr(dragFactor * velo.x) + dragFactor : 4 * rampFactor) : rampFactor);
-		float dragV = (Input.GetAxis("VerticalJ")   == 0 ? (Input.GetAxis("HorizontalJ") == 0 ? sqr(dragFactor * velo.z) + dragFactor : 4 * rampFactor) : rampFactor);
+		float dragH = (joy.x == 0 ? (joy.z == 0 ? sqr(dragFactor * velo.x) + dragFactor : 4 * rampFactor) : rampFactor);
+		float dragV = (joy.z == 0 ? (joy.x == 0 ? sqr(dragFactor * velo.z) + dragFactor : 4 * rampFactor) : rampFactor);
 		
 
 
