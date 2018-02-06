@@ -33,12 +33,21 @@ public class pMove : MonoBehaviour {
 
 		tarVelo = new Vector3(Input.GetAxis("HorizontalJ") * mSpeed,0,Input.GetAxis("VerticalJ") * mSpeed);
 		
+		if(velo.x * tarVelo.x < 0){
+			velo = new Vector3(0,0,velo.z);
+		}
+		if(velo.z * tarVelo.z < 0){
+			velo = new Vector3(velo.x,0,0);
+		}
+
 		tarVelo += new Vector3(velo.x == 0 ? 1000 * tarVelo.x * Time.deltaTime : 0,0, velo.z == 0 ? 1000 * tarVelo.z * Time.deltaTime : 0); //slam
 		
 		//velo = Vector3.Lerp(velo,tarVelo,Time.deltaTime * rampFactor); no drag
 		float dragH = (Input.GetAxis("HorizontalJ") == 0 ? (Input.GetAxis("VerticalJ")   == 0 ? sqr(dragFactor * velo.x) + dragFactor : 4 * rampFactor) : rampFactor);
 		float dragV = (Input.GetAxis("VerticalJ")   == 0 ? (Input.GetAxis("HorizontalJ") == 0 ? sqr(dragFactor * velo.z) + dragFactor : 4 * rampFactor) : rampFactor);
 		
+
+
 		float deltaH = Mathf.Lerp(velo.x,tarVelo.x,Time.deltaTime * dragH);
 		float deltaV = Mathf.Lerp(velo.z,tarVelo.z,Time.deltaTime * dragV);
 
