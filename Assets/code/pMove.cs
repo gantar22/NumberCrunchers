@@ -35,14 +35,17 @@ public class pMove : MonoBehaviour {
 		
 	}
 
+	
 
 	
 	// Update is called once per frame
 	void Update () {
 		move();
 		timers();
-		if(Input.GetButtonDown("Joystick"+id+"Button1")) kick();
-		if(Input.GetButtonUp  ("Joystick"+id+"Button1")) kickRelease();
+		if(Input.GetKeyDown(keys.b(id)) 
+		&& !GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsTag("running")) kick();
+		if(Input.GetKeyUp  (keys.b(id))
+		&& !GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsTag("running")) kickRelease();
 				
 	}
 
@@ -57,7 +60,7 @@ public class pMove : MonoBehaviour {
 	void kickRelease(){
 		charging = false;
 		chargedTime = 0;
-		if(chargedTime > 1f){
+		if(chargedTime < 1f){
 			GetComponent<Animator>().SetTrigger("sqk");
 
 		} else {
@@ -73,6 +76,7 @@ public class pMove : MonoBehaviour {
 
 		Vector3 joy = new Vector3(Input.GetAxis("HorizontalJ" + id),
 			                    0,Input.GetAxis("VerticalJ"  + id));
+
 
 		tarVelo = new Vector3(joy.x * mSpeed,0,joy.z * mSpeed);
 		
