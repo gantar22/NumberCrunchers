@@ -7,12 +7,12 @@ public class gameController : MonoBehaviour {
 	[SerializeField]
 	List<GameObject> players;
 
-	// Use this for initialization
+    public sudokuBoard sBoard;
+
 	void Start () {
-		
+        sBoard = new sudokuBoard();
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		
 	}
