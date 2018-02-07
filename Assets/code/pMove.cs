@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class pMove : MonoBehaviour {
 
+	public enum PS {quick,power,passive} //state
+
 	[SerializeField]
 	float mSpeed = 1;
 	[SerializeField]
@@ -12,10 +14,19 @@ public class pMove : MonoBehaviour {
 	float dragFactor;
 	[SerializeField]
 	float maxSpeed = 1;
+	[SerializeField]
+	float kickRange = 1;
+	[HideInInspector]
+	public bool kicking;
+	[HideInInspector]
+	public float chargedTime;
+
 
 	private Vector3 velo;
 	private Vector3 tarVelo;
 	private string id;
+	private Vector3 face = Vector3.one + Vector3.down;
+	private bool charging;
 
 
 	// Use this for initialization
@@ -29,18 +40,32 @@ public class pMove : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		move();
-		if(Input.GetButton("Joystick"+id+"Button1") && kick()) kickFX();
+		timers();
+		if(Input.GetButtonDown("Joystick"+id+"Button1")) kick();
+		if(Input.GetButtonUp  ("Joystick"+id+"Button1")) kickRelease();
+				
 	}
 
-	bool kick(){ //return true if you hit
-		bool r = false;
-	
-		return r;
+	void timers(){
+		if(charging) chargedTime += Time.deltaTime;
 	}
 
-	void kickFX(){
-
+	void kick(){
+		charging = true;
 	}
+
+	void kickRelease(){
+		charging = false;
+		chargedTime = 0;
+		if(chargedTime > 1f){
+			GetComponent<Animator>().SetTrigger("sqk");
+
+		} else {
+			GetComponent<Animator>().SetTrigger("spk");
+		}
+	}
+
+
 
 	void move(){
 		//naive
@@ -72,6 +97,11 @@ public class pMove : MonoBehaviour {
 		velo = new Vector3(deltaH,0,deltaV);
 
 		transform.position += velo;
+
+		if(velo.x > 0) face.x =  1;
+		if(velo.y < 0) face.x = -1;
+		if(velo.z > 0) face.z =  1;
+		if(velo.z > 0) face.z = -1;
 
 	}
 
