@@ -113,6 +113,17 @@ public class pMove : MonoBehaviour {
 		return Mathf.Pow(x,2);
 	}
 
+	// Parents newChild to the object to which this script is attached. In this case, the player
+	void SetChild(GameObject newChild) {
+		newChild.transform.parent = this.transform;
+	}
 
+	void OnTriggerEnter(Collider other) {
+		if (other.gameObject.tag == "scissors") {
+			SetChild (other.gameObject);
+			other.gameObject.tag = "weapon";
+		} 
+	}
+		
 
 }
