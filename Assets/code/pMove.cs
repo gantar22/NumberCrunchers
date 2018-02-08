@@ -15,11 +15,26 @@ public class pMove : MonoBehaviour {
 	[SerializeField]
 	float maxSpeed = 1;
 	[SerializeField]
-	float kickRange = 1;
+	Sprite chargeSprite;
+	[SerializeField]
+	Sprite kickSprite;
+	[SerializeField]
+	Sprite slideSprite;
+	[SerializeField]
+	Sprite standingSprite;
+	[SerializeField]
+	Sprite oofSprite;
+
 	[HideInInspector]
 	public bool kicking;
 	[HideInInspector]
 	public float chargedTime;
+	[SerializeField]
+	bool turning;
+	[SerializeField]
+	bool standing;
+	[SerializeField]
+	bool letgo;
 
 
 	private Vector3 velo;
@@ -27,6 +42,8 @@ public class pMove : MonoBehaviour {
 	private string id;
 	private Vector3 face = Vector3.one + Vector3.down;
 	private bool charging;
+	private bool stunned;
+	private bool sliding;
 
 
 	// Use this for initialization
@@ -40,32 +57,81 @@ public class pMove : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		move();
+		if((!kicking && !stunned) || sliding) move(); else velo = Vector3.zero;
 		timers();
-		if(Input.GetKeyDown(keys.b(id)) 
-		&& !GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsTag("running")) kick();
-		if(Input.GetKeyUp  (keys.b(id))
-		&& !GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsTag("running")) kickRelease();
-				
+		if(Input.GetKeyDown(keys.b(id)) && !kicking && !stunned) kick();
+		if(Input.GetKeyUp  (keys.b(id)) && !stunned) kickRelease(); //this may get called while in standing kick multiple times
+
+		orient();
+	}
+
+	void orient(){	
+		GetComponent<SpriteRenderer>().flipX = sliding && (face.x < 0 || (face.x == 0 && face.z > 0));
+		GetComponent<SpriteRenderer>().flipY = sliding && (face.x < 0 || (face.x == 0 && face.z > 0));
+	
+
+		if(Mathf.Abs(velo.x) < .1 && !charging) transform.eulerAngles = new Vector3(transform.eulerAngles.x,Mathf.LerpAngle(transform.eulerAngles.y,transform.eulerAngles.y > 90 ? 180 : 0,Time.deltaTime * 5),transform.eulerAngles.z);
+
+		if(Mathf.Abs(velo.x) < .1 && !charging) return;
+		if(face.x >  0) transform.eulerAngles = new Vector3(transform.eulerAngles.x,Mathf.LerpAngle(transform.eulerAngles.y,0  ,Time.deltaTime * 5),transform.eulerAngles.z);
+		if(face.x <  0) transform.eulerAngles = new Vector3(transform.eulerAngles.x,Mathf.LerpAngle(transform.eulerAngles.y,180,Time.deltaTime * 5),transform.eulerAngles.z);
 	}
 
 	void timers(){
-		if(charging) chargedTime += Time.deltaTime;
+		if(charging) chargedTime = Mathf.Clamp(chargedTime + Time.deltaTime,0,3);
 	}
 
 	void kick(){
-		charging = true;
+		if(Mathf.Pow(sqr(velo.x)+sqr(velo.z),.5f) > .1f){
+			kicking = true;
+			sliding = true;
+			GetComponent<SpriteRenderer>().sprite = slideSprite;
+			transform.Rotate(Vector3.forward * 90 * face.x);
+		} else {
+			charging = true;
+			GetComponent<SpriteRenderer>().sprite = chargeSprite;
+		}
 	}
 
 	void kickRelease(){
-		charging = false;
-		chargedTime = 0;
-		if(chargedTime < 1f){
-			GetComponent<Animator>().SetTrigger("sqk");
-
+		if(sliding){
+			GetComponent<SpriteRenderer>().sprite = standingSprite;
+			kicking = false;
+			chargedTime = 0;
+			sliding = false;
+			transform.Rotate(Vector3.back * 90 * face.x);
+			stunned = true;
+			Invoke("unoof",.1f);
 		} else {
-			GetComponent<Animator>().SetTrigger("spk");
+			GetComponent<SpriteRenderer>().sprite = kickSprite;
+			charging = false;
+			kicking = true;
+			Invoke("unkick",.5f);
 		}
+	}
+
+	void unkick(){
+		CancelInvoke("unkick");//safety reasons
+		if(Random.value > .25f || chargedTime < .3f) {landKick(); return;}
+		kicking = false;
+		GetComponent<SpriteRenderer>().sprite = oofSprite;
+		stunned = true;
+		Invoke("unoof",chargedTime);
+
+		chargedTime = 0;
+		print(chargedTime);
+	}
+
+	void unoof(){
+		stunned = false;
+		GetComponent<SpriteRenderer>().sprite = standingSprite;
+	}
+
+	public void landKick(){
+		CancelInvoke("unkick");
+		kicking = false;
+		GetComponent<SpriteRenderer>().sprite = standingSprite;
+		chargedTime = 0;
 	}
 
 
@@ -74,38 +140,68 @@ public class pMove : MonoBehaviour {
 		//naive
 		//transform.position += new Vector3(Input.GetAxis("HorizontalJ") * mSpeed,0f,Input.GetAxis("VerticalJ") * mSpeed);
 
+
 		Vector3 joy = new Vector3(Input.GetAxis("HorizontalJ" + id),
 			                    0,Input.GetAxis("VerticalJ"  + id));
 
+		if(sliding){
+			velo = Vector3.Lerp(velo,Vector3.zero,Time.deltaTime / velo.magnitude);
+			transform.position += velo * mSpeed;
+			return;
+		} 
 
-		tarVelo = new Vector3(joy.x * mSpeed,0,joy.z * mSpeed);
-		
-		if(velo.x * tarVelo.x < 0){
-			velo = new Vector3(0,0,velo.z);
+		face = new Vector3(joy.x > 0 ? 1 : (joy.x == 0 ? 0 : -1),0,joy.z > 0 ? 1 : (joy.z == 0 ? 0 : -1));
+
+		if(charging) return;
+
+
+		if(Mathf.Abs(joy.x) < .9f && Mathf.Abs(joy.z) < .9f){
+			transform.position += joy * mSpeed;
+			velo = Vector3.zero;
+			tarVelo = Vector3.zero;
+			return;
 		}
-		if(velo.z * tarVelo.z < 0){
-			velo = new Vector3(velo.x,0,0);
+
+		tarVelo = new Vector3(joy.x,0,joy.z);
+		/*if(turning){
+			if(velo.x * tarVelo.x < 0){
+				velo = new Vector3(0,0,velo.z);
+			}
+			if(velo.z * tarVelo.z < 0){
+				velo = new Vector3(velo.x,0,0);
+			} //turning doesn't keep momentum
+		}*/
+		if(turning){
+			if(velo.z * tarVelo.z <= 0 && velo.x * tarVelo.x <= 0){
+				velo *= Time.deltaTime/2;
+			}
 		}
 
-		tarVelo += new Vector3(velo.x == 0 ? 1000 * tarVelo.x * Time.deltaTime : 0,0, velo.z == 0 ? 1000 * tarVelo.z * Time.deltaTime : 0); //slam
+		if(standing) tarVelo += new Vector3(velo.x == 0 && sqr(joy.x) > .9f ? 500 * tarVelo.x * Time.deltaTime : 0,0, velo.z == 0 && sqr(joy.z) > .9f ? 500 * tarVelo.z * Time.deltaTime : 0); //slam
 		
-		//velo = Vector3.Lerp(velo,tarVelo,Time.deltaTime * rampFactor); no drag
-		float dragH = (joy.x == 0 ? (joy.z == 0 ? sqr(dragFactor * velo.x) + dragFactor : 4 * rampFactor) : rampFactor);
-		float dragV = (joy.z == 0 ? (joy.x == 0 ? sqr(dragFactor * velo.z) + dragFactor : 4 * rampFactor) : rampFactor);
-		
+		float dragH = 1;
+		float dragV = 1;
 
+		if(letgo){
+			dragH = (joy.x == 0 ? (joy.z == 0 ? sqr(dragFactor * velo.x) + dragFactor : rampFactor) : rampFactor);
+			dragV = (joy.z == 0 ? (joy.x == 0 ? sqr(dragFactor * velo.z) + dragFactor : rampFactor) : rampFactor);
+		}
 
 		float deltaH = Mathf.Lerp(velo.x,tarVelo.x,Time.deltaTime * dragH);
 		float deltaV = Mathf.Lerp(velo.z,tarVelo.z,Time.deltaTime * dragV);
 
 		velo = new Vector3(deltaH,0,deltaV);
 
-		transform.position += velo;
+
+		float diagonalC = Mathf.Clamp(Mathf.Pow(sqr(velo.x)+sqr(velo.z),.5f) - 1,0,2);
+
+		transform.position += velo * (mSpeed / (diagonalC + 1));
+
 
 		if(velo.x > 0) face.x =  1;
 		if(velo.y < 0) face.x = -1;
 		if(velo.z > 0) face.z =  1;
-		if(velo.z > 0) face.z = -1;
+		if(velo.z < 0) face.z = -1;
 
 	}
 
