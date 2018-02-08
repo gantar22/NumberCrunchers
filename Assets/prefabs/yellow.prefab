@@ -96,7 +96,6 @@ MonoBehaviour:
   turning: 1
   standing: 1
   letgo: 0
---- !u!114 &114844193421311230
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
