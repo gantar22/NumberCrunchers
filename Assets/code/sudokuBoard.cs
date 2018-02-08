@@ -2,8 +2,8 @@
 
 public class sudokuBoard : MonoBehaviour {
     
-    public int xSize;
-    public int zSize;
+    public float[] xLims = { -2.5f, -0.315f};
+    public float[] zLims = { -3.6f,  2.0f  };
 
     private int[,] defaultBoardNos = { { 0, 9, 3, 1, 0, 5, 6, 4, 0},
                                { 7, 0, 0, 0, 0, 0, 0, 0, 5},
@@ -28,7 +28,8 @@ public class sudokuBoard : MonoBehaviour {
         }
     }
 
-	public sudokuBoard () {
+	public sudokuBoard ()
+    {
         Square[,] boardSquares = new Square[9,9];
         for(int i = 0; i < 9; i++)
         {
