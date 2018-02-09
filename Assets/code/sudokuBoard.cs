@@ -2,10 +2,15 @@
 
 public class sudokuBoard : MonoBehaviour {
     
-    public float[] xLims = { -2.5f, -0.315f};
-    public float[] zLims = { -3.6f,  2.0f  };
+    public static float[] xLims = { -2.5f, 2.5f };
+    public static float[] zLims = { -3.6f, 2.0f };
+    public static float xRes    = (xLims[1] - xLims[0]) / 9;
+    public static float zRes    = (zLims[1] - zLims[0]) / 9;
 
-    private int[,] defaultBoardNos = { { 0, 9, 3, 1, 0, 5, 6, 4, 0},
+    public Square[,] boardSquares = new Square[9, 9];
+
+    private int[,] defaultBoardNos = { 
+                               { 0, 9, 3, 1, 0, 5, 6, 4, 0},
                                { 7, 0, 0, 0, 0, 0, 0, 0, 5},
                                { 5, 0, 1, 2, 0, 9, 3, 0, 7},
                                { 2, 0, 0, 0, 0, 0, 0, 0, 3},
@@ -16,9 +21,9 @@ public class sudokuBoard : MonoBehaviour {
                                { 0, 4, 7, 3, 0, 2, 8, 5, 0} };
     public class Square
     {
-        int number;
-        int ownedBy;
-        bool spawningPwrUp;
+        public int number;
+        public int ownedBy;
+        public bool spawningPwrUp;
 
         public Square(int number, int ownedBy, bool spawningPwrUp)
         {
@@ -30,7 +35,6 @@ public class sudokuBoard : MonoBehaviour {
 
 	public sudokuBoard ()
     {
-        Square[,] boardSquares = new Square[9,9];
         for(int i = 0; i < 9; i++)
         {
             for(int j = 0; j < 9; j++)
@@ -42,6 +46,9 @@ public class sudokuBoard : MonoBehaviour {
 
     public Square playerPosToSquare(Transform playerPos)
     {
-        return null;
+        Debug.Log("IndX:"+ (int)Mathf.Clamp(Mathf.Floor((playerPos.position.x - xLims[0]) / xRes), 0, 8) +
+            ", IndZ:" + (int)Mathf.Clamp(Mathf.Floor((playerPos.position.z - zLims[0]) / zRes), 0, 8));
+        return boardSquares[(int)Mathf.Clamp(Mathf.Floor((playerPos.position.x - xLims[0]) / xRes), 0, 8),
+            (int)Mathf.Clamp(Mathf.Floor((playerPos.position.z - zLims[0]) / zRes), 0, 8)];
     }
 }
