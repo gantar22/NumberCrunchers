@@ -15,9 +15,10 @@ public class gameController : MonoBehaviour {
 	
 	void Update ()
     {
-        foreach (GameObject player in players)
-        {
-            //Debug.Log("P"+players.IndexOf(player)+": "+sBoard.playerPosToSquare(player.transform).number);
-        }
+        Debug.Log("x:" + players[3].transform.position.x + "z:" + players[3].transform.position.z);
+        //foreach (GameObject player in players)
+        //{
+        //    Debug.Log("P" + players.IndexOf(player) + ": " + sBoard.playerPosToSquare(player.transform).number);
+        //}
     }
 }
