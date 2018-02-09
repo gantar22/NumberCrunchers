@@ -6,8 +6,8 @@ public class gameController : MonoBehaviour {
 
     public sudokuBoard sBoard;
 
-    [SerializeField]
-    List<GameObject> players;
+
+	public List<GameObject> players;
 
 	void Start () {
         sBoard = new sudokuBoard();
