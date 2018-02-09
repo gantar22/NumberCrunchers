@@ -86,11 +86,14 @@ MonoBehaviour:
   rampFactor: 1
   dragFactor: 100
   maxSpeed: 1
-  chargeSprite: {fileID: 21300000, guid: e5925c2a92fbd314b81354901afbc40a, type: 3}
-  kickSprite: {fileID: 21300000, guid: a93d2f47907ac3048b0e4db0923086f2, type: 3}
-  slideSprite: {fileID: 21300000, guid: 9cecc2963290d49428c3fd1eb2da57f1, type: 3}
-  standingSprite: {fileID: 21300000, guid: 3f3b81e53e716544596689eb258f2e04, type: 3}
-  oofSprite: {fileID: 21300000, guid: e70df9a0edfc4f942b579c70fdd05dc6, type: 3}
+  chargeSprite: {fileID: 21300000, guid: eaea0d1a5f6374c5c8d16aaf33af64e5, type: 3}
+  kickSprite: {fileID: 21300000, guid: 27f84c191a6714f6980bdf1a97d164f6, type: 3}
+  slideSprite: {fileID: 21300000, guid: 3ebe562ffc2494f0ebecc323614ad018, type: 3}
+  standingSprite: {fileID: 21300000, guid: 1ee40fbc29fb9496f941cd057a764813, type: 3}
+  oofSprite: {fileID: 21300000, guid: 38dce2d9aa4604ac4a2c28e77101f722, type: 3}
+  walkSprites:
+  - {fileID: 21300000, guid: aef84bb82095140acb7afd0ab4d55272, type: 3}
+  - {fileID: 21300000, guid: 3806eb9e25cfe425cb05c77e4df5554d, type: 3}
   kicking: 0
   chargedTime: 0
   stunned: 0
@@ -108,7 +111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d9c69241658f6dd49b23a4b87e28c8a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 3
+  id: 1
   typ: 0
 --- !u!212 &212801085797259076
 SpriteRenderer:
@@ -119,7 +122,6 @@ SpriteRenderer:
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -135,7 +137,6 @@ SpriteRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 0
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5

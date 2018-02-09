@@ -104,6 +104,9 @@ MonoBehaviour:
   slideSprite: {fileID: 21300000, guid: 9cecc2963290d49428c3fd1eb2da57f1, type: 3}
   standingSprite: {fileID: 21300000, guid: 3f3b81e53e716544596689eb258f2e04, type: 3}
   oofSprite: {fileID: 21300000, guid: e70df9a0edfc4f942b579c70fdd05dc6, type: 3}
+  walkSprites:
+  - {fileID: 21300000, guid: 73ab42157f765974f81dce59a7f86355, type: 3}
+  - {fileID: 21300000, guid: 98d408acf0d41ad42a4895e5210518c7, type: 3}
   kicking: 0
   chargedTime: 0
   stunned: 0
@@ -119,7 +122,6 @@ SpriteRenderer:
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -135,7 +137,6 @@ SpriteRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 0
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5
