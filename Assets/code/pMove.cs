@@ -64,7 +64,10 @@ public class pMove : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		GetComponent<Animator>().SetBool("walking",false);
+
 		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<gameController>();
+
 		if((!kicking && !stunned) || sliding) move(); else velo = Vector3.zero;
 		timers();
 		if(Input.GetKeyDown(keys.b(id)) && !kicking && !stunned) kick();
@@ -99,6 +102,7 @@ public class pMove : MonoBehaviour {
 	}
 
 	void kick(){
+		GetComponent<Animator>().SetBool("walking",true);
 		if(Mathf.Pow(sqr(velo.x)+sqr(velo.z),.5f) > .1f){
 			kicking = true;
 			sliding = true;
@@ -182,9 +186,10 @@ public class pMove : MonoBehaviour {
 
 		if(charging) return;
 
+		if(joy.magnitude > .01f) GetComponent<Animator>().SetBool("walking",true);
 
 		if(Mathf.Abs(joy.x) < .9f && Mathf.Abs(joy.z) < .9f){
-			transform.position += new Vector3(Mathf.Pow(joy.x,.5f),Mathf.Pow(joy.y,.5f),Mathf.Pow(joy.z,.5f)) * mSpeed;
+			transform.position += joy * mSpeed;
 			velo = Vector3.zero;
 			tarVelo = Vector3.zero;
 			return;
