@@ -70,7 +70,7 @@ public class pMove : MonoBehaviour {
 
 		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<gameController>();
 
-		if(!(kicking || stunned || sliding)) GetComponent<SpriteRenderer>().sprite = standingSprite;
+		if(!(kicking || stunned || sliding || charging)) GetComponent<SpriteRenderer>().sprite = standingSprite;
 
 		if((!kicking && !stunned) || sliding) move(); else velo = Vector3.zero; 
 		
@@ -79,8 +79,8 @@ public class pMove : MonoBehaviour {
 		if(stunned) print(id);
 
 		timers();
-		if(Input.GetKeyDown(keys.b(id)) && !kicking && !stunned) kick();
-		if(Input.GetKeyUp  (keys.b(id)) && !stunned) kickRelease(); //this may get called while in standing kick multiple times
+		if((Input.GetKeyDown(keys.b(id)) || Input.GetKeyDown(KeyCode.Space)) && !kicking && !stunned) kick();
+		if((Input.GetKeyUp  (keys.b(id)) || Input.GetKeyUp(  KeyCode.Space)) && !stunned) kickRelease(); //this may get called while in standing kick multiple times
 		orient();
 		if(kicking){
 			for(int i = 0; i < gc.players.Count; i++){
@@ -88,6 +88,8 @@ public class pMove : MonoBehaviour {
 							if(playersHit >> gc.players[i].GetComponent<objT>().id == 0)
 							{gc.players[i].GetComponent<pMove>().gotKicked(chargedTime);
 							playersHit += ((playersHit >> gc.players[i].GetComponent<objT>().id) + 1) << gc.players[i].GetComponent<objT>().id;
+							GetComponent<AudioSource>().volume = .5f + (chargedTime);
+							GetComponent<AudioSource>().Play();
 							} 
 				}
 			}
