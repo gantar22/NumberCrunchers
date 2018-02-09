@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class gameController : MonoBehaviour {
 
-	[SerializeField]
-	List<GameObject> players;
+	
+	public List<GameObject> players;
 
     public sudokuBoard sBoard;
 

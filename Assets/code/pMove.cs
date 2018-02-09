@@ -29,6 +29,8 @@ public class pMove : MonoBehaviour {
 	public bool kicking;
 	[HideInInspector]
 	public float chargedTime;
+	[HideInInspector]
+	public bool stunned;
 	[SerializeField]
 	bool turning;
 	[SerializeField]
@@ -37,18 +39,22 @@ public class pMove : MonoBehaviour {
 	bool letgo;
 
 
+
 	private Vector3 velo;
 	private Vector3 tarVelo;
 	private string id;
 	private Vector3 face = Vector3.one + Vector3.down;
 	private bool charging;
-	private bool stunned;
 	private bool sliding;
+	private gameController gc;
+	private bool hit;
+	private int playersHit;
 
 
 	// Use this for initialization
 	void Start () {
 		id = GetComponent<objT>().id.ToString();
+		gc = GameObject.FindWithTag("GameController").GetComponent<gameController>();
 		
 	}
 
@@ -61,8 +67,17 @@ public class pMove : MonoBehaviour {
 		timers();
 		if(Input.GetKeyDown(keys.b(id)) && !kicking && !stunned) kick();
 		if(Input.GetKeyUp  (keys.b(id)) && !stunned) kickRelease(); //this may get called while in standing kick multiple times
-
 		orient();
+		if(kicking){
+			for(int i = 0; i < gc.players.Count; i++){
+				if(i != GetComponent<objT>().id && gc.players[i].GetComponent<BoxCollider>().bounds.Intersects(GetComponent<BoxCollider>().bounds)){
+							if(playersHit >> gc.players[i].GetComponent<objT>().id == 0)
+							{gc.players[i].GetComponent<pMove>().gotKicked(chargedTime);
+							playersHit += ((playersHit >> gc.players[i].GetComponent<objT>().id) + 1) << gc.players[i].GetComponent<objT>().id;
+							print("HHHH");} else {print("Carter aint half bad");}
+				}
+			}
+		}
 	}
 
 	void orient(){	
@@ -94,6 +109,7 @@ public class pMove : MonoBehaviour {
 	}
 
 	void kickRelease(){
+		playersHit = 0;
 		if(sliding){
 			GetComponent<SpriteRenderer>().sprite = standingSprite;
 			kicking = false;
@@ -106,20 +122,21 @@ public class pMove : MonoBehaviour {
 			GetComponent<SpriteRenderer>().sprite = kickSprite;
 			charging = false;
 			kicking = true;
-			Invoke("unkick",.5f);
+			if(!hit) Invoke("unkick",.5f);
+			else hit = false;
 		}
 	}
 
 	void unkick(){
 		CancelInvoke("unkick");//safety reasons
-		if(Random.value > .25f || chargedTime < .3f) {landKick(); return;}
+		if((Random.value > .25f || chargedTime < .3f)) {landKick(); return;}
 		kicking = false;
 		GetComponent<SpriteRenderer>().sprite = oofSprite;
 		stunned = true;
 		Invoke("unoof",chargedTime);
 
 		chargedTime = 0;
-		print(chargedTime);
+
 	}
 
 	void unoof(){
@@ -131,7 +148,16 @@ public class pMove : MonoBehaviour {
 		CancelInvoke("unkick");
 		kicking = false;
 		GetComponent<SpriteRenderer>().sprite = standingSprite;
+
 		chargedTime = 0;
+	}
+
+	public void gotKicked(float time){
+		if(stunned) return;
+		stunned = true;
+		GetComponent<SpriteRenderer>().sprite = oofSprite;
+		Invoke("unoof",time + 1f);
+
 	}
 
 
@@ -219,7 +245,9 @@ public class pMove : MonoBehaviour {
 			SetChild (other.gameObject);
 			other.gameObject.tag = "weapon";
 		} 
+
 	}
-		
+	
+
 
 }
