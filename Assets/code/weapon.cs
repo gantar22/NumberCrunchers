@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class weapon : MonoBehaviour {
+public class Weapon : MonoBehaviour {
 
 	public int holderID;
 
@@ -18,9 +18,9 @@ public class weapon : MonoBehaviour {
 
 	void OnTriggerEnter(Collider other) {
 		if (this.gameObject.tag == "scissors") {
-			holderID = other.gameObject.GetComponent<objT> ().id;
+			holderID = other.gameObject.GetComponent<ObjT> ().id;
 		} else if (this.gameObject.tag == "weapon") {
-			if (other.gameObject.GetComponent<objT> ().id != holderID) {
+			if (other.gameObject.GetComponent<ObjT> ().id != holderID) {
 				Destroy (other.gameObject);
 				Destroy (this.gameObject);
 			}

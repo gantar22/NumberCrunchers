@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class sudokuBoard : MonoBehaviour {
+public class SudokuBoard : MonoBehaviour {
     
     public static float[] xLims = { -2.5f, 2.5f };
     public static float[] zLims = { -3.6f, 2.0f };
@@ -33,7 +33,7 @@ public class sudokuBoard : MonoBehaviour {
         }
     }
 
-	public sudokuBoard ()
+	public SudokuBoard ()
     {
         for(int i = 0; i < 9; i++)
         {
