@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class pMove : MonoBehaviour {
+public class PMove : MonoBehaviour {
 
 	public enum PS {quick,power,passive} //state
 
@@ -49,32 +49,26 @@ public class pMove : MonoBehaviour {
 	private Vector3 face = Vector3.one + Vector3.down;
 	private bool charging;
 	private bool sliding;
-	private gameController gc;
+	private GameController gc;
 	private bool hit;
 	private int playersHit;
 
 
 	// Use this for initialization
 	void Start () {
-		id = GetComponent<objT>().id.ToString();
-		
-		
+		id = GetComponent<ObjT>().id.ToString();
 	}
 
-	
-
-	
 	// Update is called once per frame
 	void Update () {
 		//GetComponent<Animator>().SetBool("walking",false);
 
-		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<gameController>();
+		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
 		if(!(kicking || stunned || sliding || charging)) GetComponent<SpriteRenderer>().sprite = standingSprite;
 
 		if((!kicking && !stunned) || sliding) move(); else velo = Vector3.zero; 
 		
-
 		//print(id + (kicking ? " kicking " : "") + (stunned ? " stunned " : "") + (sliding ? " sliding" : ""));
 		if(stunned) print(id);
 
@@ -85,9 +79,9 @@ public class pMove : MonoBehaviour {
 		if(kicking){
 			for(int i = 0; i < gc.players.Count; i++){
 				if(gameObject != gc.players[i] && gc.players[i].GetComponent<BoxCollider>().bounds.Intersects(GetComponent<BoxCollider>().bounds)){
-							if(playersHit >> gc.players[i].GetComponent<objT>().id == 0)
-							{gc.players[i].GetComponent<pMove>().gotKicked(chargedTime);
-							playersHit += ((playersHit >> gc.players[i].GetComponent<objT>().id) + 1) << gc.players[i].GetComponent<objT>().id;
+							if(playersHit >> gc.players[i].GetComponent<ObjT>().id == 0)
+							{gc.players[i].GetComponent<PMove>().gotKicked(chargedTime);
+							playersHit += ((playersHit >> gc.players[i].GetComponent<ObjT>().id) + 1) << gc.players[i].GetComponent<ObjT>().id;
 							GetComponent<AudioSource>().volume = .5f + (chargedTime);
 							GetComponent<AudioSource>().Play();
 							} 
@@ -266,8 +260,7 @@ public class pMove : MonoBehaviour {
 		if (other.gameObject.tag == "scissors") {
 			SetChild (other.gameObject);
 			other.gameObject.tag = "weapon";
-		} 
-
+		}
 	}
 	
 
