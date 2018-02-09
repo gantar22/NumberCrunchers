@@ -1,3 +1,4 @@
+﻿
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -183,7 +184,7 @@ public class pMove : MonoBehaviour {
 
 
 		if(Mathf.Abs(joy.x) < .9f && Mathf.Abs(joy.z) < .9f){
-			transform.position += joy * mSpeed;
+			transform.position += new Vector3(Mathf.Pow(joy.x,.5f),Mathf.Pow(joy.y,.5f),Mathf.Pow(joy.z,.5f)) * mSpeed;
 			velo = Vector3.zero;
 			tarVelo = Vector3.zero;
 			return;
