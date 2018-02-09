@@ -25,6 +25,8 @@ public class pMove : MonoBehaviour {
 	Sprite standingSprite;
 	[SerializeField]
 	Sprite oofSprite;
+	[SerializeField]
+	Sprite[] walkSprites;
 
 	[HideInInspector]
 	public bool kicking;
@@ -64,22 +66,29 @@ public class pMove : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		GetComponent<Animator>().SetBool("walking",false);
+		//GetComponent<Animator>().SetBool("walking",false);
 
 		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<gameController>();
 
-		if((!kicking && !stunned) || sliding) move(); else velo = Vector3.zero;
+		if(!(kicking || stunned || sliding)) GetComponent<SpriteRenderer>().sprite = standingSprite;
+
+		if((!kicking && !stunned) || sliding) move(); else velo = Vector3.zero; 
+		
+
+		//print(id + (kicking ? " kicking " : "") + (stunned ? " stunned " : "") + (sliding ? " sliding" : ""));
+		if(stunned) print(id);
+
 		timers();
 		if(Input.GetKeyDown(keys.b(id)) && !kicking && !stunned) kick();
 		if(Input.GetKeyUp  (keys.b(id)) && !stunned) kickRelease(); //this may get called while in standing kick multiple times
 		orient();
 		if(kicking){
 			for(int i = 0; i < gc.players.Count; i++){
-				if(i != GetComponent<objT>().id && gc.players[i].GetComponent<BoxCollider>().bounds.Intersects(GetComponent<BoxCollider>().bounds)){
+				if(gameObject != gc.players[i] && gc.players[i].GetComponent<BoxCollider>().bounds.Intersects(GetComponent<BoxCollider>().bounds)){
 							if(playersHit >> gc.players[i].GetComponent<objT>().id == 0)
 							{gc.players[i].GetComponent<pMove>().gotKicked(chargedTime);
 							playersHit += ((playersHit >> gc.players[i].GetComponent<objT>().id) + 1) << gc.players[i].GetComponent<objT>().id;
-							print("HHHH");} else {print("Carter aint half bad");}
+							} 
 				}
 			}
 		}
@@ -102,7 +111,7 @@ public class pMove : MonoBehaviour {
 	}
 
 	void kick(){
-		GetComponent<Animator>().SetBool("walking",true);
+		//GetComponent<Animator>().SetBool("walking",true);
 		if(Mathf.Pow(sqr(velo.x)+sqr(velo.z),.5f) > .1f){
 			kicking = true;
 			sliding = true;
@@ -186,7 +195,8 @@ public class pMove : MonoBehaviour {
 
 		if(charging) return;
 
-		if(joy.magnitude > .01f) GetComponent<Animator>().SetBool("walking",true);
+		//if(joy.magnitude > .01f) GetComponent<Animator>().SetBool("walking",true);
+
 
 		if(Mathf.Abs(joy.x) < .9f && Mathf.Abs(joy.z) < .9f){
 			transform.position += joy * mSpeed;
@@ -194,6 +204,9 @@ public class pMove : MonoBehaviour {
 			tarVelo = Vector3.zero;
 			return;
 		}
+
+		GetComponent<SpriteRenderer>().sprite = walkSprites[(int)((Time.time * 4) % walkSprites.Length)];
+		print(Time.time.ToString() + " : " + ((Time.time * 4) % walkSprites.Length).ToString() + " > " + ((int)(( 4 * Time.time) % walkSprites.Length)).ToString());
 
 		tarVelo = new Vector3(joy.x,0,joy.z);
 		/*if(turning){
