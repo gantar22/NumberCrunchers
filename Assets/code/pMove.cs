@@ -54,7 +54,7 @@ public class pMove : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		id = GetComponent<objT>().id.ToString();
-		gc = GameObject.FindWithTag("GameController").GetComponent<gameController>();
+		
 		
 	}
 
@@ -63,6 +63,7 @@ public class pMove : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<gameController>();
 		if((!kicking && !stunned) || sliding) move(); else velo = Vector3.zero;
 		timers();
 		if(Input.GetKeyDown(keys.b(id)) && !kicking && !stunned) kick();
