@@ -20,22 +20,6 @@ public class SudokuBoard {
 
     public Square[,] boardSquares = new Square[9, 9];
 
-    public class Square
-    {
-        public int prefillNum;
-        public int solNum;
-        public int ownedBy;
-        public bool spawningPwrUp;
-        
-        public Square(int prefillNum, int solNum, int ownedBy, bool spawningPwrUp)
-        {
-            this.prefillNum = prefillNum;
-            this.solNum = solNum;
-            this.ownedBy = ownedBy;
-            this.spawningPwrUp = spawningPwrUp;
-        }
-    }
-
 	public SudokuBoard ()
     {
         int[,] boardSol = new int[,] {
@@ -49,29 +33,25 @@ public class SudokuBoard {
             { 2, 4, 8, 9, 5, 7, 1, 3, 6},
             { 7, 6, 3, 4, 1, 8, 2, 5, 9} };
 
-        //for (int oC = 0; oC < 9; oC=+3)
-        //{
-        //    for (int oR = 0; oR < 9; oR=+3)
-        //    {
-        //        for (int iC = 0; iC < 3; iC++)
-        //        {
-        //            int sR = 0;
-        //            if (iC == 2) sR = Random.Range(0, 1);
-        //            else         sR = Random.Range(0, 2);
-        //            for (int iR = 0; iR < 3; iR++)
-        //            {
-        //                Debug.Log("oC:"+oC+",oR:"+oR+",");
-        //                if (iC == 2 && iR == 2) boardSquares[oC+iC,oR+iR] = new Square(boardSol[oC+iC,oR+iR], boardSol[oC+iC,oR+iR], 0, false);
-        //                else if (iR == sR)      boardSquares[oC+iC,oR+iR] = new Square(boardSol[oC+iC,oR+iR], boardSol[oC+iC,oR+iR], 0, false);
-        //                else
-        //                {
-        //                    boardSquares[oC+iC, oR+iR] = new Square(0, boardSol[oC+iC, oR+iR], 0, false);
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-	}
+        int[,] boardFill = new int[,] {
+            { 4, 3, 5, 2, 6, 0, 7, 0, 1},
+            { 0, 0, 2, 0, 7, 0, 0, 9, 0},
+            { 0, 0, 7, 0, 0, 4, 5, 0, 2},
+            { 8, 2, 0, 1, 0, 0, 0, 4, 0},
+            { 0, 0, 4, 6, 0, 2, 9, 0, 0},
+            { 0, 5, 0, 0, 0, 3, 0, 2, 8},
+            { 0, 0, 9, 3, 0, 0, 0, 7, 4},
+            { 0, 4, 0, 0, 5, 0, 0, 3, 6},
+            { 7, 0, 3, 0, 1, 8, 0, 0, 0} };
+
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                boardSquares[i, j] = new Square(boardFill[i, j], boardSol[i, j], 0, false);
+            }
+        }
+    }
 
     public Square objTransformToSquare(Transform playerPos)
     {

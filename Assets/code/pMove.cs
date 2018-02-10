@@ -7,7 +7,9 @@ public class PMove : MonoBehaviour {
 
 	public enum PS {quick,power,passive} //state
 
-	[SerializeField]
+    [SerializeField]
+    GameObject spriteHolder;
+    [SerializeField]
 	float mSpeed = 1;
 	[SerializeField]
 	float rampFactor = 1;
@@ -42,13 +44,7 @@ public class PMove : MonoBehaviour {
 	bool standing;
 	[SerializeField]
 	bool letgo;
-    [SerializeField]
-    Transform tileSpawn;
-    [SerializeField]
-    GameObject dragTilePrefab;
-    [SerializeField]
-    GameObject spriteHolder;
-
+    
     private Vector3 velo;
 	private Vector3 tarVelo;
 	private string id;
@@ -58,10 +54,16 @@ public class PMove : MonoBehaviour {
 	private GameController gc;
 	private bool hit;
     private int playersHit;
-    private int draggingNum = 0;
-    private GameObject draggedTile;
 
-	void Start () {
+    [SerializeField]
+    Transform tileSpawn;
+    [SerializeField]
+    GameObject dragTilePrefab;
+
+    private int dragTileNum = 0;
+    private GameObject dragTileGO;
+
+    void Start () {
 		id = GetComponent<ObjT>().id.ToString();
 	}
 
@@ -70,7 +72,7 @@ public class PMove : MonoBehaviour {
 
 		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
-        if (draggingNum != 0) spriteHolder.GetComponent<SpriteRenderer>().sprite = dragSprite;
+        if (dragTileNum != 0)                                  spriteHolder.GetComponent<SpriteRenderer>().sprite = dragSprite;
         else if (!(kicking || stunned || sliding || charging)) spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
 		if((!kicking && !stunned) || sliding) move(); else velo = Vector3.zero; 
@@ -80,7 +82,10 @@ public class PMove : MonoBehaviour {
 
 		timers();
 
-        if (draggingNum != 0 && Input.GetButton("pd")) checkTileDrop(draggedTile.transform);
+        if (dragTileNum != 0 && Input.GetButton("pd"))
+        {
+            handleTileDrop(dragTileGO, dragTileNum);
+        }
         if ((Input.GetKeyDown(keys.b(id)) || Input.GetKeyDown(KeyCode.Space)) && !kicking && !stunned) kick();
 		if ((Input.GetKeyUp  (keys.b(id)) || Input.GetKeyUp(  KeyCode.Space)) && !stunned) kickRelease(); //this may get called while in standing kick multiple times
 
@@ -180,19 +185,27 @@ public class PMove : MonoBehaviour {
 
 	}
 
-    private void checkTileDrop(Transform tilePos)
+    private void handleTileDrop(GameObject draggedTile, int draggingNum)
     {
-        if (gc.sBoard.objTransformToSquare(tilePos) != null)
+        Square sqr  = gc.sBoard.objTransformToSquare(draggedTile.transform);
+
+        if (sqr == null) return;
+        else if (sqr.solNum != draggingNum)
         {
             draggingNum = 0;
-            draggedTile.GetComponent<Rigidbody>().velocity = new Vector3(Random.Range(-10,10), 0, Random.Range(-10, 10));
-            Destroy(draggedTile, 1.0f);
+            draggedTile.GetComponent<Rigidbody>().velocity = new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10));
+            Destroy(draggedTile, 2.0f);
+        }
+        else
+        {
+            draggingNum = 0;
+            Destroy(draggedTile);
         }
     }
 
 
 
-	void move(){
+    void move(){
 		//naive
 		//transform.position += new Vector3(Input.GetAxis("HorizontalJ") * mSpeed,0f,Input.GetAxis("VerticalJ") * mSpeed);
 
@@ -284,11 +297,11 @@ public class PMove : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if (draggingNum == 0 && other.CompareTag("PickupTile") && Input.GetButton("pd"))
+        if (dragTileNum == 0 && other.CompareTag("PickupTile") && Input.GetButton("pd"))
         {
-            draggingNum = other.gameObject.GetComponent<ObjT>().id;
-            draggedTile = Instantiate(dragTilePrefab, tileSpawn);
-            draggedTile.GetComponent<BoxCollider>().enabled = false;
+            dragTileNum = other.gameObject.GetComponent<ObjT>().id;
+            dragTileGO = Instantiate(dragTilePrefab, tileSpawn);
+            dragTileGO.GetComponent<BoxCollider>().enabled = false;
         }
     }
 }
