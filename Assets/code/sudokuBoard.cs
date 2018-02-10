@@ -46,8 +46,6 @@ public class SudokuBoard : MonoBehaviour {
 
     public Square playerPosToSquare(Transform playerPos)
     {
-        Debug.Log("IndX:"+ (int)Mathf.Clamp(Mathf.Floor((playerPos.position.x - xLims[0]) / xRes), 0, 8) +
-            ", IndZ:" + (int)Mathf.Clamp(Mathf.Floor((playerPos.position.z - zLims[0]) / zRes), 0, 8));
         return boardSquares[(int)Mathf.Clamp(Mathf.Floor((playerPos.position.x - xLims[0]) / xRes), 0, 8),
             (int)Mathf.Clamp(Mathf.Floor((playerPos.position.z - zLims[0]) / zRes), 0, 8)];
     }

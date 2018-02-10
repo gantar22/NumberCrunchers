@@ -27,8 +27,8 @@ public class PMove : MonoBehaviour {
 	Sprite oofSprite;
 	[SerializeField]
 	Sprite[] walkSprites;
-
-	[HideInInspector]
+    
+    [HideInInspector]
 	public bool kicking;
 	[HideInInspector]
 	public float chargedTime;
@@ -40,10 +40,15 @@ public class PMove : MonoBehaviour {
 	bool standing;
 	[SerializeField]
 	bool letgo;
+    [SerializeField]
+    Transform tileSpawn;
+    [SerializeField]
+    GameObject spriteHolder;
 
 
 
-	private Vector3 velo;
+
+    private Vector3 velo;
 	private Vector3 tarVelo;
 	private string id;
 	private Vector3 face = Vector3.one + Vector3.down;
@@ -65,7 +70,7 @@ public class PMove : MonoBehaviour {
 
 		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
-		if(!(kicking || stunned || sliding || charging)) GetComponent<SpriteRenderer>().sprite = standingSprite;
+		if(!(kicking || stunned || sliding || charging)) spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
 		if((!kicking && !stunned) || sliding) move(); else velo = Vector3.zero; 
 		
@@ -91,8 +96,8 @@ public class PMove : MonoBehaviour {
 	}
 
 	void orient(){	
-		GetComponent<SpriteRenderer>().flipX = sliding && (face.x < 0 || (face.x == 0 && face.z > 0));
-		GetComponent<SpriteRenderer>().flipY = sliding && (face.x < 0 || (face.x == 0 && face.z > 0));
+		spriteHolder.GetComponent<SpriteRenderer>().flipX = sliding && (face.x < 0 || (face.x == 0 && face.z > 0));
+        spriteHolder.GetComponent<SpriteRenderer>().flipY = sliding && (face.x < 0 || (face.x == 0 && face.z > 0));
 	
 
 		if(Mathf.Abs(velo.x) < .1 && !charging) transform.eulerAngles = new Vector3(transform.eulerAngles.x,Mathf.LerpAngle(transform.eulerAngles.y,transform.eulerAngles.y > 90 ? 180 : 0,Time.deltaTime * 5),transform.eulerAngles.z);
@@ -111,18 +116,18 @@ public class PMove : MonoBehaviour {
 		if(Mathf.Pow(sqr(velo.x)+sqr(velo.z),.5f) > .1f){
 			kicking = true;
 			sliding = true;
-			GetComponent<SpriteRenderer>().sprite = slideSprite;
+            spriteHolder.GetComponent<SpriteRenderer>().sprite = slideSprite;
 			transform.Rotate(Vector3.forward * 90 * face.x);
 		} else {
 			charging = true;
-			GetComponent<SpriteRenderer>().sprite = chargeSprite;
+            spriteHolder.GetComponent<SpriteRenderer>().sprite = chargeSprite;
 		}
 	}
 
 	void kickRelease(){
 		playersHit = 0;
 		if(sliding){
-			GetComponent<SpriteRenderer>().sprite = standingSprite;
+            spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 			kicking = false;
 			chargedTime = 0;
 			sliding = false;
@@ -130,7 +135,7 @@ public class PMove : MonoBehaviour {
 			stunned = true;
 			Invoke("unoof",.1f);
 		} else {
-			GetComponent<SpriteRenderer>().sprite = kickSprite;
+            spriteHolder.GetComponent<SpriteRenderer>().sprite = kickSprite;
 			charging = false;
 			kicking = true;
 			if(!hit) Invoke("unkick",.5f);
@@ -142,7 +147,7 @@ public class PMove : MonoBehaviour {
 		CancelInvoke("unkick");//safety reasons
 		if((Random.value > .25f || chargedTime < .3f)) {landKick(); return;}
 		kicking = false;
-		GetComponent<SpriteRenderer>().sprite = oofSprite;
+        spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
 		stunned = true;
 		Invoke("unoof",chargedTime);
 
@@ -152,13 +157,13 @@ public class PMove : MonoBehaviour {
 
 	void unoof(){
 		stunned = false;
-		GetComponent<SpriteRenderer>().sprite = standingSprite;
+        spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 	}
 
 	public void landKick(){
 		CancelInvoke("unkick");
 		kicking = false;
-		GetComponent<SpriteRenderer>().sprite = standingSprite;
+        spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
 		chargedTime = 0;
 	}
@@ -166,7 +171,7 @@ public class PMove : MonoBehaviour {
 	public void gotKicked(float time){
 		if(stunned) return;
 		stunned = true;
-		GetComponent<SpriteRenderer>().sprite = oofSprite;
+        spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
 		Invoke("unoof",time + 1f);
 
 	}
@@ -201,8 +206,8 @@ public class PMove : MonoBehaviour {
 			return;
 		}
 
-		GetComponent<SpriteRenderer>().sprite = walkSprites[(int)((Time.time * 4) % walkSprites.Length)];
-		print(Time.time.ToString() + " : " + ((Time.time * 4) % walkSprites.Length).ToString() + " > " + ((int)(( 4 * Time.time) % walkSprites.Length)).ToString());
+        spriteHolder.GetComponent<SpriteRenderer>().sprite = walkSprites[(int)((Time.time * 4) % walkSprites.Length)];
+		//print(Time.time.ToString() + " : " + ((Time.time * 4) % walkSprites.Length).ToString() + " > " + ((int)(( 4 * Time.time) % walkSprites.Length)).ToString());
 
 		tarVelo = new Vector3(joy.x,0,joy.z);
 		/*if(turning){
@@ -261,8 +266,11 @@ public class PMove : MonoBehaviour {
 			SetChild (other.gameObject);
 			other.gameObject.tag = "weapon";
 		}
-	}
-	
-
-
+        if (other.CompareTag("PickupTile"))
+        {
+            Debug.Log(this.name);
+            other.GetComponent<BoxCollider>().enabled = false;
+            Instantiate(other.gameObject, tileSpawn);
+        }
+    }
 }
