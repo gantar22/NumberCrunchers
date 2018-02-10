@@ -7,14 +7,4 @@ public class ObjT : MonoBehaviour {
 	public enum obj {pc,pwr,num,bgr}
 	[SerializeField]
 	public obj typ;
-
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 }

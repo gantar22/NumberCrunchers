@@ -5,8 +5,6 @@ using UnityEngine;
 public class GameController : MonoBehaviour {
 
     public SudokuBoard sBoard;
-
-
 	public List<GameObject> players;
 
 	void Start () {
@@ -17,7 +15,7 @@ public class GameController : MonoBehaviour {
     {
         //foreach (GameObject player in players)
         //{
-        //    Debug.Log("P" + players.IndexOf(player) + ": " + sBoard.playerPosToSquare(player.transform).number);
+        //    Debug.Log("P" + players.IndexOf(player) + ": " + sBoard.objTransformToSquare(player.transform).number);
         //}
     }
 }

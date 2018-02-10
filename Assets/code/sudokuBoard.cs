@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class SudokuBoard : MonoBehaviour {
+public class SudokuBoard {
     
     public static float[] xLims = { -2.5f, 2.5f };
     public static float[] zLims = { -3.6f, 2.0f };
@@ -21,13 +21,14 @@ public class SudokuBoard : MonoBehaviour {
                                { 0, 4, 7, 3, 0, 2, 8, 5, 0} };
     public class Square
     {
-        public int number;
+        public int prefillNum;
         public int ownedBy;
         public bool spawningPwrUp;
+        public int[] possibleSols;
 
         public Square(int number, int ownedBy, bool spawningPwrUp)
         {
-            this.number = number;
+            this.prefillNum = number;
             this.ownedBy = ownedBy;
             this.spawningPwrUp = spawningPwrUp;
         }
@@ -44,8 +45,13 @@ public class SudokuBoard : MonoBehaviour {
         }
 	}
 
-    public Square playerPosToSquare(Transform playerPos)
+    public Square objTransformToSquare(Transform playerPos)
     {
+        if (playerPos.position.x < xLims[0] || playerPos.position.x > xLims[1] ||
+            playerPos.position.z < zLims[0] || playerPos.position.z > zLims[1])
+        {
+            return null;
+        }
         return boardSquares[(int)Mathf.Clamp(Mathf.Floor((playerPos.position.x - xLims[0]) / xRes), 0, 8),
             (int)Mathf.Clamp(Mathf.Floor((playerPos.position.z - zLims[0]) / zRes), 0, 8)];
     }
