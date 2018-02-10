@@ -6,17 +6,15 @@ public class Weapon : MonoBehaviour {
 
 	public int holderID;
 
-	// Use this for initialization
 	void Start () {
 		
 	}
 	
-	// Update is called once per frame
 	void Update () {
 		
 	}
 
-	void OnTriggerEnter(Collider other) {
+	private void OnTriggerEnter(Collider other) {
 		if (this.gameObject.tag == "scissors") {
 			holderID = other.gameObject.GetComponent<ObjT> ().id;
 		} else if (this.gameObject.tag == "weapon") {
