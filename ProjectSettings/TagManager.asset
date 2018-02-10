@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - PickupTile
+  - scissors
   layers:
   - Default
   - TransparentFX
@@ -44,9 +45,6 @@ TagManager:
     locked: 0
   - name: background
     uniqueID: 2254938223
-    locked: 0
-  - name: Reference
-    uniqueID: 1926430341
     locked: 0
   - name: players
     uniqueID: 1531187755

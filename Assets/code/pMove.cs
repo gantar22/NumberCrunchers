@@ -25,7 +25,9 @@ public class PMove : MonoBehaviour {
 	Sprite standingSprite;
 	[SerializeField]
 	Sprite oofSprite;
-	[SerializeField]
+    [SerializeField]
+    Sprite dragSprite;
+    [SerializeField]
 	Sprite[] walkSprites;
     
     [HideInInspector]
@@ -43,10 +45,9 @@ public class PMove : MonoBehaviour {
     [SerializeField]
     Transform tileSpawn;
     [SerializeField]
+    GameObject dragTilePrefab;
+    [SerializeField]
     GameObject spriteHolder;
-
-
-
 
     private Vector3 velo;
 	private Vector3 tarVelo;
@@ -56,21 +57,21 @@ public class PMove : MonoBehaviour {
 	private bool sliding;
 	private GameController gc;
 	private bool hit;
-	private int playersHit;
+    private int playersHit;
+    private int draggingNum = 0;
+    private GameObject draggedTile;
 
-
-	// Use this for initialization
 	void Start () {
 		id = GetComponent<ObjT>().id.ToString();
 	}
 
-	// Update is called once per frame
 	void Update () {
 		//GetComponent<Animator>().SetBool("walking",false);
 
 		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
-		if(!(kicking || stunned || sliding || charging)) spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
+        if (draggingNum != 0) spriteHolder.GetComponent<SpriteRenderer>().sprite = dragSprite;
+        else if (!(kicking || stunned || sliding || charging)) spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
 		if((!kicking && !stunned) || sliding) move(); else velo = Vector3.zero; 
 		
@@ -78,10 +79,14 @@ public class PMove : MonoBehaviour {
 		if(stunned) print(id);
 
 		timers();
-		if((Input.GetKeyDown(keys.b(id)) || Input.GetKeyDown(KeyCode.Space)) && !kicking && !stunned) kick();
-		if((Input.GetKeyUp  (keys.b(id)) || Input.GetKeyUp(  KeyCode.Space)) && !stunned) kickRelease(); //this may get called while in standing kick multiple times
-		orient();
-		if(kicking){
+
+        if (draggingNum != 0 && Input.GetButton("pd")) checkTileDrop(draggedTile.transform);
+        if ((Input.GetKeyDown(keys.b(id)) || Input.GetKeyDown(KeyCode.Space)) && !kicking && !stunned) kick();
+		if ((Input.GetKeyUp  (keys.b(id)) || Input.GetKeyUp(  KeyCode.Space)) && !stunned) kickRelease(); //this may get called while in standing kick multiple times
+
+        orient();
+
+        if (kicking){
 			for(int i = 0; i < gc.players.Count; i++){
 				if(gameObject != gc.players[i] && gc.players[i].GetComponent<BoxCollider>().bounds.Intersects(GetComponent<BoxCollider>().bounds)){
 							if(playersHit >> gc.players[i].GetComponent<ObjT>().id == 0)
@@ -152,7 +157,6 @@ public class PMove : MonoBehaviour {
 		Invoke("unoof",chargedTime);
 
 		chargedTime = 0;
-
 	}
 
 	void unoof(){
@@ -175,6 +179,16 @@ public class PMove : MonoBehaviour {
 		Invoke("unoof",time + 1f);
 
 	}
+
+    private void checkTileDrop(Transform tilePos)
+    {
+        if (gc.sBoard.objTransformToSquare(tilePos) != null)
+        {
+            draggingNum = 0;
+            draggedTile.GetComponent<Rigidbody>().velocity = new Vector3(Random.Range(-10,10), 0, Random.Range(-10, 10));
+            Destroy(draggedTile, 1.0f);
+        }
+    }
 
 
 
@@ -266,11 +280,15 @@ public class PMove : MonoBehaviour {
 			SetChild (other.gameObject);
 			other.gameObject.tag = "weapon";
 		}
-        if (other.CompareTag("PickupTile"))
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (draggingNum == 0 && other.CompareTag("PickupTile") && Input.GetButton("pd"))
         {
-            Debug.Log(this.name);
-            other.GetComponent<BoxCollider>().enabled = false;
-            Instantiate(other.gameObject, tileSpawn);
+            draggingNum = other.gameObject.GetComponent<ObjT>().id;
+            draggedTile = Instantiate(dragTilePrefab, tileSpawn);
+            draggedTile.GetComponent<BoxCollider>().enabled = false;
         }
     }
 }
