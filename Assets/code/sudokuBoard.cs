@@ -14,7 +14,7 @@ using UnityEngine;
 public class SudokuBoard {
     
     public static float[] xLims = { -2.5f, 2.5f };
-    public static float[] zLims = { -3.6f, 2.0f };
+    public static float[] zLims = { -3.8f, 3.2f };
     public static float xRes    = (xLims[1] - xLims[0]) / 9;
     public static float zRes    = (zLims[1] - zLims[0]) / 9;
 
