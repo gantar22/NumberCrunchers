@@ -31,7 +31,9 @@ public class PMove : MonoBehaviour {
     Sprite dragSprite;
     [SerializeField]
 	Sprite[] walkSprites;
-    
+    [SerializeField]
+    GameObject failTileExplosion;
+
     [HideInInspector]
 	public bool kicking;
 	[HideInInspector]
@@ -82,12 +84,9 @@ public class PMove : MonoBehaviour {
 
 		timers();
 
-        if (dragTileNum != 0 && Input.GetButton("pd"))
-        {
-            handleTileDrop(dragTileGO, dragTileNum);
-        }
-        if ((Input.GetKeyDown(keys.b(id)) || Input.GetKeyDown(KeyCode.Space)) && !kicking && !stunned) kick();
-		if ((Input.GetKeyUp  (keys.b(id)) || Input.GetKeyUp(  KeyCode.Space)) && !stunned) kickRelease(); //this may get called while in standing kick multiple times
+        if (dragTileNum != 0 && Input.GetButton("pd"+id)) handleTileDrop(dragTileGO);
+        if ((Input.GetKeyDown(keys.b(id)) || Input.GetButtonDown("b"+id)) && !kicking && !stunned) kick();
+		if ((Input.GetKeyUp  (keys.b(id)) || Input.GetButtonUp  ("b"+id)) && !stunned) kickRelease(); //this may get called while in standing kick multiple times
 
         orient();
 
@@ -185,21 +184,27 @@ public class PMove : MonoBehaviour {
 
 	}
 
-    private void handleTileDrop(GameObject draggedTile, int draggingNum)
+    private void handleTileDrop(GameObject draggedTile)
     {
-        Square sqr  = gc.sBoard.objTransformToSquare(draggedTile.transform);
+        if (draggedTile == null) return;
 
+        Square sqr  = gc.sBoard.objTransformToSquare(draggedTile.transform);
         if (sqr == null) return;
-        else if (sqr.solNum != draggingNum)
+        else if (sqr.solNum != dragTileNum)
         {
-            draggingNum = 0;
-            draggedTile.GetComponent<Rigidbody>().velocity = new Vector3(Random.Range(-10, 10), 0, Random.Range(-10, 10));
-            Destroy(draggedTile, 2.0f);
+            dragTileNum = 0;
+            Destroy(draggedTile);
+            GameObject explosion = Instantiate(failTileExplosion, tileSpawn);
+            explosion.transform.parent = null;
+            explosion.GetComponentInChildren<SpriteRenderer>().sortingLayerName = "playground";
+            explosion.GetComponentInChildren<SpriteRenderer>().sortingOrder = 2;
+            Destroy(explosion, 1.0f);
         }
         else
         {
-            draggingNum = 0;
+            dragTileNum = 0;
             Destroy(draggedTile);
+            Instantiate(dragTilePrefab, tileSpawn).transform.parent = null;
         }
     }
 
@@ -297,7 +302,7 @@ public class PMove : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if (dragTileNum == 0 && other.CompareTag("PickupTile") && Input.GetButton("pd"))
+        if (dragTileNum == 0 && other.CompareTag("PickupTile") && Input.GetButton("pd"+id))
         {
             dragTileNum = other.gameObject.GetComponent<ObjT>().id;
             dragTileGO = Instantiate(dragTilePrefab, tileSpawn);

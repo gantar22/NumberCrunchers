@@ -221,6 +221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79d5180b631beed48a52c912dda2b893, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spriteHolder: {fileID: 1050162324985692}
   mSpeed: 0.1
   rampFactor: 1
   dragFactor: 100
@@ -230,9 +231,11 @@ MonoBehaviour:
   slideSprite: {fileID: 21300000, guid: c30e76278f60ce74f9124ae132324fc2, type: 3}
   standingSprite: {fileID: 21300000, guid: 0541b6671ab71dd4bb2b4caa55eb6ba9, type: 3}
   oofSprite: {fileID: 21300000, guid: 80c5c7928e34f534fabd6ae44af5214f, type: 3}
+  dragSprite: {fileID: 0}
   walkSprites:
   - {fileID: 21300000, guid: d6af4d93657c1424fb076909462f139f, type: 3}
   - {fileID: 21300000, guid: a4e97ea33d00caf45b2a571955b672c9, type: 3}
+  failTileExplosion: {fileID: 139366, guid: b185c1a9cf067374586d095111b15bd1, type: 2}
   kicking: 0
   chargedTime: 0
   stunned: 0
@@ -240,9 +243,7 @@ MonoBehaviour:
   standing: 1
   letgo: 0
   tileSpawn: {fileID: 4277249694666458}
-  pickupTilePrefab: {fileID: 1035017609491326, guid: 3a8c19bc140b9434b9adbc36cea922aa,
-    type: 2}
-  spriteHolder: {fileID: 1050162324985692}
+  dragTilePrefab: {fileID: 0}
 --- !u!114 &114505829071659588
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -289,7 +290,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1531187755
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 0541b6671ab71dd4bb2b4caa55eb6ba9, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
