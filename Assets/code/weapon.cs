@@ -6,14 +6,6 @@ public class Weapon : MonoBehaviour {
 
 	public int holderID;
 
-	void Start () {
-		
-	}
-	
-	void Update () {
-		
-	}
-
 	private void OnTriggerEnter(Collider other) {
 		if (this.gameObject.tag == "scissors") {
 			holderID = other.gameObject.GetComponent<ObjT> ().id;

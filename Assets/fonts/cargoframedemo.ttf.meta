@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 9d465c587151e7a41b5b0c5edc89999f
+timeCreated: 1518481374
+licenseType: Free
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Car-Go Frame 3.1 Demo
+  fontNames:
+  - Car-Go Frame 3.1 Demo
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
