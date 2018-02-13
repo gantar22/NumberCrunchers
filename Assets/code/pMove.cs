@@ -49,7 +49,8 @@ public class PMove : MonoBehaviour {
     
     private Vector3 velo;
 	private Vector3 tarVelo;
-	private string id;
+	private int id;
+    private string idStr;
 	private Vector3 face = Vector3.one + Vector3.down;
 	private bool charging;
 	private bool sliding;
@@ -66,7 +67,8 @@ public class PMove : MonoBehaviour {
     private GameObject dragTileGO;
 
     void Start () {
-		id = GetComponent<ObjT>().id.ToString();
+        id = GetComponent<ObjT>().id;
+        idStr = id.ToString();
 	}
 
 	void Update () {
@@ -77,24 +79,24 @@ public class PMove : MonoBehaviour {
         if (dragTileNum != 0)                                  spriteHolder.GetComponent<SpriteRenderer>().sprite = dragSprite;
         else if (!(kicking || stunned || sliding || charging)) spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
-		if((!kicking && !stunned) || sliding) move(); else velo = Vector3.zero; 
+		if((!kicking && !stunned) || sliding) Move(); else velo = Vector3.zero; 
 		
 		//print(id + (kicking ? " kicking " : "") + (stunned ? " stunned " : "") + (sliding ? " sliding" : ""));
-		if(stunned) print(id);
+		if(stunned) print(idStr);
 
-		timers();
+		Timers();
 
-        if (dragTileNum != 0 && Input.GetButton("pd"+id)) handleTileDrop(dragTileGO);
-        if ((Input.GetKeyDown(keys.b(id)) || Input.GetButtonDown("b"+id)) && !kicking && !stunned) kick();
-		if ((Input.GetKeyUp  (keys.b(id)) || Input.GetButtonUp  ("b"+id)) && !stunned) kickRelease(); //this may get called while in standing kick multiple times
+        if (dragTileNum != 0 && Input.GetButton("pd"+idStr)) HandleTileDrop();
+        if ((Input.GetKeyDown(keys.b(idStr)) || Input.GetButtonDown("b"+idStr)) && !kicking && !stunned) Kick();
+		if ((Input.GetKeyUp  (keys.b(idStr)) || Input.GetButtonUp  ("b"+idStr)) && !stunned) KickRelease(); //this may get called while in standing kick multiple times
 
-        orient();
+        Orient();
 
         if (kicking){
 			for(int i = 0; i < gc.players.Count; i++){
 				if(gameObject != gc.players[i] && gc.players[i].GetComponent<BoxCollider>().bounds.Intersects(GetComponent<BoxCollider>().bounds)){
 							if(playersHit >> gc.players[i].GetComponent<ObjT>().id == 0)
-							{gc.players[i].GetComponent<PMove>().gotKicked(chargedTime);
+							{gc.players[i].GetComponent<PMove>().GotKicked(chargedTime);
 							playersHit += ((playersHit >> gc.players[i].GetComponent<ObjT>().id) + 1) << gc.players[i].GetComponent<ObjT>().id;
 							GetComponent<AudioSource>().volume = .5f + (chargedTime);
 							GetComponent<AudioSource>().Play();
@@ -104,7 +106,7 @@ public class PMove : MonoBehaviour {
 		}
 	}
 
-	void orient(){	
+	void Orient(){	
 		spriteHolder.GetComponent<SpriteRenderer>().flipX = sliding && (face.x < 0 || (face.x == 0 && face.z > 0));
         spriteHolder.GetComponent<SpriteRenderer>().flipY = sliding && (face.x < 0 || (face.x == 0 && face.z > 0));
 	
@@ -116,13 +118,13 @@ public class PMove : MonoBehaviour {
 		if(face.x <  0) transform.eulerAngles = new Vector3(transform.eulerAngles.x,Mathf.LerpAngle(transform.eulerAngles.y,180,Time.deltaTime * 5),transform.eulerAngles.z);
 	}
 
-	void timers(){
+	void Timers(){
 		if(charging) chargedTime = Mathf.Clamp(chargedTime + Time.deltaTime,0,3);
 	}
 
-	void kick(){
+	void Kick(){
 		//GetComponent<Animator>().SetBool("walking",true);
-		if(Mathf.Pow(sqr(velo.x)+sqr(velo.z),.5f) > .1f){
+		if(Mathf.Pow(Sqr(velo.x)+Sqr(velo.z),.5f) > .1f){
 			kicking = true;
 			sliding = true;
             spriteHolder.GetComponent<SpriteRenderer>().sprite = slideSprite;
@@ -133,7 +135,7 @@ public class PMove : MonoBehaviour {
 		}
 	}
 
-	void kickRelease(){
+	void KickRelease(){
 		playersHit = 0;
 		if(sliding){
             spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
@@ -152,9 +154,9 @@ public class PMove : MonoBehaviour {
 		}
 	}
 
-	void unkick(){
+	void Unkick(){
 		CancelInvoke("unkick");//safety reasons
-		if((Random.value > .25f || chargedTime < .3f)) {landKick(); return;}
+		if((Random.value > .25f || chargedTime < .3f)) {LandKick(); return;}
 		kicking = false;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
 		stunned = true;
@@ -163,12 +165,12 @@ public class PMove : MonoBehaviour {
 		chargedTime = 0;
 	}
 
-	void unoof(){
+	void Unoof(){
 		stunned = false;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 	}
 
-	public void landKick(){
+	public void LandKick(){
 		CancelInvoke("unkick");
 		kicking = false;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
@@ -176,7 +178,7 @@ public class PMove : MonoBehaviour {
 		chargedTime = 0;
 	}
 
-	public void gotKicked(float time){
+	public void GotKicked(float time){
 		if(stunned) return;
 		stunned = true;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
@@ -184,16 +186,17 @@ public class PMove : MonoBehaviour {
 
 	}
 
-    private void handleTileDrop(GameObject draggedTile)
+    private void HandleTileDrop()
     {
-        if (draggedTile == null) return;
+        if (dragTileGO == null) return;
 
-        Square sqr  = gc.sBoard.objTransformToSquare(draggedTile.transform);
+        Square sqr  = gc.sBoard.TryClaimSquare(dragTileNum, id, dragTileGO.transform);
+
         if (sqr == null) return;
         else if (sqr.solNum != dragTileNum)
         {
             dragTileNum = 0;
-            Destroy(draggedTile);
+            Destroy(dragTileGO);
             GameObject explosion = Instantiate(failTileExplosion, tileSpawn);
             explosion.transform.parent = null;
             explosion.GetComponentInChildren<SpriteRenderer>().sortingLayerName = "playground";
@@ -203,20 +206,20 @@ public class PMove : MonoBehaviour {
         else
         {
             dragTileNum = 0;
-            Destroy(draggedTile);
+            Destroy(dragTileGO);
             Instantiate(dragTilePrefab, tileSpawn).transform.parent = null;
         }
     }
 
 
 
-    void move(){
+    void Move(){
 		//naive
 		//transform.position += new Vector3(Input.GetAxis("HorizontalJ") * mSpeed,0f,Input.GetAxis("VerticalJ") * mSpeed);
 
 
-		Vector3 joy = new Vector3(Input.GetAxis("HorizontalJ" + id),
-			                    0,Input.GetAxis("VerticalJ"  + id));
+		Vector3 joy = new Vector3(Input.GetAxis("HorizontalJ" + idStr),
+			                    0,Input.GetAxis("VerticalJ"  + idStr));
 
 		if(sliding){
 			velo = Vector3.Lerp(velo,Vector3.zero,Time.deltaTime / velo.magnitude);
@@ -256,14 +259,14 @@ public class PMove : MonoBehaviour {
 			}
 		}
 
-		if(standing) tarVelo += new Vector3(velo.x == 0 && sqr(joy.x) > .9f ? 500 * tarVelo.x * Time.deltaTime : 0,0, velo.z == 0 && sqr(joy.z) > .9f ? 500 * tarVelo.z * Time.deltaTime : 0); //slam
+		if(standing) tarVelo += new Vector3(velo.x == 0 && Sqr(joy.x) > .9f ? 500 * tarVelo.x * Time.deltaTime : 0,0, velo.z == 0 && Sqr(joy.z) > .9f ? 500 * tarVelo.z * Time.deltaTime : 0); //slam
 		
 		float dragH = 1;
 		float dragV = 1;
 
 		if(letgo){
-			dragH = (joy.x == 0 ? (joy.z == 0 ? sqr(dragFactor * velo.x) + dragFactor : rampFactor) : rampFactor);
-			dragV = (joy.z == 0 ? (joy.x == 0 ? sqr(dragFactor * velo.z) + dragFactor : rampFactor) : rampFactor);
+			dragH = (joy.x == 0 ? (joy.z == 0 ? Sqr(dragFactor * velo.x) + dragFactor : rampFactor) : rampFactor);
+			dragV = (joy.z == 0 ? (joy.x == 0 ? Sqr(dragFactor * velo.z) + dragFactor : rampFactor) : rampFactor);
 		}
 
 		float deltaH = Mathf.Lerp(velo.x,tarVelo.x,Time.deltaTime * dragH);
@@ -272,7 +275,7 @@ public class PMove : MonoBehaviour {
 		velo = new Vector3(deltaH,0,deltaV);
 
 
-		float diagonalC = Mathf.Clamp(Mathf.Pow(sqr(velo.x)+sqr(velo.z),.5f) - 1,0,2);
+		float diagonalC = Mathf.Clamp(Mathf.Pow(Sqr(velo.x)+Sqr(velo.z),.5f) - 1,0,2);
 
 		transform.position += velo * (mSpeed / (diagonalC + 1));
 
@@ -284,7 +287,7 @@ public class PMove : MonoBehaviour {
 
 	}
 
-	float sqr(float x){
+	float Sqr(float x){
 		return Mathf.Pow(x,2);
 	}
 
@@ -302,7 +305,7 @@ public class PMove : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if (dragTileNum == 0 && other.CompareTag("PickupTile") && Input.GetButton("pd"+id))
+        if (dragTileNum == 0 && other.CompareTag("PickupTile") && Input.GetButton("pd"+idStr))
         {
             dragTileNum = other.gameObject.GetComponent<ObjT>().id;
             dragTileGO = Instantiate(dragTilePrefab, tileSpawn);

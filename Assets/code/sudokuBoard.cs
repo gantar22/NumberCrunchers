@@ -13,15 +13,17 @@ using UnityEngine;
 */
 public class SudokuBoard {
     
-    public static float[] xLims = { -2.5f, 2.5f };
-    public static float[] zLims = { -3.8f, 3.2f };
-    public static float xRes    = (xLims[1] - xLims[0]) / 9;
-    public static float zRes    = (zLims[1] - zLims[0]) / 9;
+    public float[] xLims = { -4.15f, 3.5f };
+    public float[] zLims = { -3.9f, 3.8f };
+    public float xRes;
+    public float zRes;
 
     public Square[,] boardSquares = new Square[9, 9];
 
 	public SudokuBoard ()
     {
+        xRes = (xLims[1] - xLims[0]) / 9;
+        zRes = (zLims[1] - zLims[0]) / 9;
         int[,] boardSol = new int[,] {
             { 4, 3, 5, 2, 6, 9, 7, 8, 1},
             { 6, 8, 2, 5, 7, 1, 4, 9, 3},
@@ -48,20 +50,52 @@ public class SudokuBoard {
         {
             for (int j = 0; j < 9; j++)
             {
-                boardSquares[i, j] = new Square(boardFill[i, j], boardSol[i, j], 0, false);
+                boardSquares[i, j] = new Square(boardFill[8-i, j],
+                                                boardSol[8-i, j],
+                                                0,
+                                                false,
+                                                8-i,
+                                                j,
+                                                (xLims[0]+j*xRes),
+                                                (xLims[0]+(j+1)*xRes),
+                                                (zLims[0]+i*zRes),
+                                                (xLims[0]+(i+1)*zRes));
             }
         }
     }
 
-    public Square objTransformToSquare(Transform playerPos)
+    public Square FillRandSquare()
     {
-        if (playerPos.position.x < xLims[0] || playerPos.position.x > xLims[1] ||
-            playerPos.position.z < zLims[0] || playerPos.position.z > zLims[1])
+        List<Square> unfilledSquares = new List<Square>();
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (boardSquares[i,j].fillNum == 0)
+                {
+                    unfilledSquares.Add(boardSquares[i, j]);
+                }
+            }
+        }
+        if (unfilledSquares.Count == 0) return null;
+        Square squareToFill = unfilledSquares[Random.Range(0, unfilledSquares.Count)];
+        squareToFill.fillNum = squareToFill.solNum;
+        return squareToFill;
+    }
+
+    public Square TryClaimSquare(int sol, int player, Transform tilePos)
+    {
+        if (tilePos.position.x < xLims[0] || tilePos.position.x > xLims[1] ||
+            tilePos.position.z < zLims[0] || tilePos.position.z > zLims[1])
         {
             return null;
         }
-        return boardSquares[(int)Mathf.Clamp(Mathf.Floor((playerPos.position.x - xLims[0]) / xRes), 0, 8),
-            (int)Mathf.Clamp(Mathf.Floor((playerPos.position.z - zLims[0]) / zRes), 0, 8)];
-    }
+        Square squareToFill =  boardSquares[(int)(8 - Mathf.Clamp(Mathf.Floor((tilePos.position.x - xLims[0]) / xRes), 0, 8)),
+                                      (int)Mathf.Clamp(Mathf.Floor((tilePos.position.z - zLims[0]) / zRes), 0, 8)];
 
+        if (squareToFill.solNum != sol) return null;
+        squareToFill.fillNum = sol;
+        squareToFill.ownedBy = player;
+        return squareToFill;
+    }
 }
