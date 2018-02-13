@@ -10,10 +10,12 @@ public class GameController : MonoBehaviour {
     public SudokuBoard sBoard;
 
     private bool gameEnd = false;
-    private float initWait = 20.0f;
-    private float autoFillTime = 10.0f;
+    private float initWait = 2.0f;
+    private float autoFillTime = 0.5f;
+    //private float initWait = 20.0f;
+    //private float autoFillTime = 10.0f;
 
-	void Start () {
+    void Start () {
         sBoard = new SudokuBoard();
         StartCoroutine(AutoFillTiles());
     }

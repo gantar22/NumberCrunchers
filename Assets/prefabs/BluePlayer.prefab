@@ -231,7 +231,7 @@ MonoBehaviour:
   slideSprite: {fileID: 21300000, guid: 3ebe562ffc2494f0ebecc323614ad018, type: 3}
   standingSprite: {fileID: 21300000, guid: 1ee40fbc29fb9496f941cd057a764813, type: 3}
   oofSprite: {fileID: 21300000, guid: 38dce2d9aa4604ac4a2c28e77101f722, type: 3}
-  dragSprite: {fileID: 0}
+  dragSprite: {fileID: 21300000, guid: 3336ed16560ee4107bd0180978bbba33, type: 3}
   walkSprites:
   - {fileID: 21300000, guid: aef84bb82095140acb7afd0ab4d55272, type: 3}
   - {fileID: 21300000, guid: 3806eb9e25cfe425cb05c77e4df5554d, type: 3}
@@ -243,7 +243,9 @@ MonoBehaviour:
   standing: 1
   letgo: 0
   tileSpawn: {fileID: 4767219739824546}
-  dragTilePrefab: {fileID: 0}
+  dragTilePrefab: {fileID: 1035017609491326, guid: 0a3abb53c977aff448347975cf696252,
+    type: 2}
+  dragTileSprite: {fileID: 21300000, guid: f5c643697e5a3bb48a7666a642389608, type: 3}
 --- !u!114 &114625490797152586
 MonoBehaviour:
   m_ObjectHideFlags: 1

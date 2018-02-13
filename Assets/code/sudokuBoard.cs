@@ -20,11 +20,8 @@ public class SudokuBoard {
 
     public Square[,] boardSquares = new Square[9, 9];
 
-	public SudokuBoard ()
-    {
-        xRes = (xLims[1] - xLims[0]) / 9;
-        zRes = (zLims[1] - zLims[0]) / 9;
-        int[,] boardSol = new int[,] {
+
+    int[,] boardSol = new int[,] {
             { 4, 3, 5, 2, 6, 9, 7, 8, 1},
             { 6, 8, 2, 5, 7, 1, 4, 9, 3},
             { 1, 9, 7, 8, 3, 4, 5, 6, 2},
@@ -35,7 +32,7 @@ public class SudokuBoard {
             { 2, 4, 8, 9, 5, 7, 1, 3, 6},
             { 7, 6, 3, 4, 1, 8, 2, 5, 9} };
 
-        int[,] boardFill = new int[,] {
+    int[,] boardFill = new int[,] {
             { 4, 3, 5, 2, 6, 0, 7, 0, 1},
             { 0, 0, 2, 0, 7, 0, 0, 9, 0},
             { 0, 0, 7, 0, 0, 4, 5, 0, 2},
@@ -46,11 +43,16 @@ public class SudokuBoard {
             { 0, 4, 0, 0, 5, 0, 0, 3, 6},
             { 7, 0, 3, 0, 1, 8, 0, 0, 0} };
 
+    public SudokuBoard ()
+    {
+        xRes = (xLims[1] - xLims[0]) / 9;
+        zRes = (zLims[1] - zLims[0]) / 9;
+
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
             {
-                boardSquares[i, j] = new Square(boardFill[8-i, j],
+                boardSquares[8-i, j] = new Square(boardFill[8-i, j],
                                                 boardSol[8-i, j],
                                                 0,
                                                 false,
@@ -80,6 +82,7 @@ public class SudokuBoard {
         if (unfilledSquares.Count == 0) return null;
         Square squareToFill = unfilledSquares[Random.Range(0, unfilledSquares.Count)];
         squareToFill.fillNum = squareToFill.solNum;
+        squareToFill.ownedBy = -1;
         return squareToFill;
     }
 
@@ -90,12 +93,13 @@ public class SudokuBoard {
         {
             return null;
         }
-        Square squareToFill =  boardSquares[(int)(8 - Mathf.Clamp(Mathf.Floor((tilePos.position.x - xLims[0]) / xRes), 0, 8)),
-                                      (int)Mathf.Clamp(Mathf.Floor((tilePos.position.z - zLims[0]) / zRes), 0, 8)];
-
-        if (squareToFill.solNum != sol) return null;
-        squareToFill.fillNum = sol;
-        squareToFill.ownedBy = player;
+        Square squareToFill =  boardSquares[(int)(8 - Mathf.Clamp(Mathf.Floor((tilePos.position.z - zLims[0]) / zRes), 0, 8)),
+                                            (int)Mathf.Clamp(Mathf.Floor((tilePos.position.x - xLims[0]) / xRes), 0, 8)];
+        if (squareToFill.solNum == sol && squareToFill.ownedBy == 0)
+        {
+            squareToFill.fillNum = sol;
+            squareToFill.ownedBy = player;
+        }
         return squareToFill;
     }
 }
