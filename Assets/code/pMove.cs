@@ -62,6 +62,8 @@ public class PMove : MonoBehaviour {
     Transform tileSpawn;
     [SerializeField]
     GameObject dragTilePrefab;
+    [SerializeField]
+    Sprite dragTileSprite;
 
     private int dragTileNum = 0;
     private GameObject dragTileGO;
@@ -73,7 +75,6 @@ public class PMove : MonoBehaviour {
 
 	void Update () {
 		//GetComponent<Animator>().SetBool("walking",false);
-
 		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
         if (dragTileNum != 0)                                  spriteHolder.GetComponent<SpriteRenderer>().sprite = dragSprite;
@@ -144,23 +145,23 @@ public class PMove : MonoBehaviour {
 			sliding = false;
 			transform.Rotate(Vector3.back * 90 * face.x);
 			stunned = true;
-			Invoke("unoof",.1f);
+			Invoke("Unoof",.1f);
 		} else {
             spriteHolder.GetComponent<SpriteRenderer>().sprite = kickSprite;
 			charging = false;
 			kicking = true;
-			if(!hit) Invoke("unkick",.5f);
+			if(!hit) Invoke("Unkick",.5f);
 			else hit = false;
 		}
 	}
 
 	void Unkick(){
-		CancelInvoke("unkick");//safety reasons
+		CancelInvoke("Unkick");//safety reasons
 		if((Random.value > .25f || chargedTime < .3f)) {LandKick(); return;}
 		kicking = false;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
 		stunned = true;
-		Invoke("unoof",chargedTime);
+		Invoke("Unoof",chargedTime);
 
 		chargedTime = 0;
 	}
@@ -171,7 +172,7 @@ public class PMove : MonoBehaviour {
 	}
 
 	public void LandKick(){
-		CancelInvoke("unkick");
+		CancelInvoke("Unkick");
 		kicking = false;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
@@ -182,7 +183,7 @@ public class PMove : MonoBehaviour {
 		if(stunned) return;
 		stunned = true;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
-		Invoke("unoof",time + 1f);
+		Invoke("Unoof",time + 1f);
 
 	}
 
@@ -193,7 +194,7 @@ public class PMove : MonoBehaviour {
         Square sqr  = gc.sBoard.TryClaimSquare(dragTileNum, id, dragTileGO.transform);
 
         if (sqr == null) return;
-        else if (sqr.solNum != dragTileNum)
+        else if (sqr.solNum != sqr.fillNum || sqr.ownedBy != id)
         {
             dragTileNum = 0;
             Destroy(dragTileGO);
@@ -207,7 +208,7 @@ public class PMove : MonoBehaviour {
         {
             dragTileNum = 0;
             Destroy(dragTileGO);
-            Instantiate(dragTilePrefab, tileSpawn).transform.parent = null;
+            Instantiate(dragTilePrefab, new Vector3(sqr.xMinLim+gc.sBoard.xRes/2, -0.6f, sqr.zMinLim + gc.sBoard.zRes / 2), new Quaternion()).transform.parent = null;
         }
     }
 
@@ -310,6 +311,8 @@ public class PMove : MonoBehaviour {
             dragTileNum = other.gameObject.GetComponent<ObjT>().id;
             dragTileGO = Instantiate(dragTilePrefab, tileSpawn);
             dragTileGO.GetComponent<BoxCollider>().enabled = false;
+            dragTileGO.GetComponentInChildren<SpriteRenderer>().sprite = dragTileSprite;
+            dragTileGO.transform.GetChild(0).transform.localScale = new Vector3(0.15f, 0.14f, 0);
         }
     }
 }
