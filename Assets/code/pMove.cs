@@ -207,8 +207,8 @@ public class PMove : MonoBehaviour {
         else
         {
             dragTileNum = 0;
-            Destroy(dragTileGO);
-            Instantiate(dragTilePrefab, new Vector3(sqr.xMinLim+gc.sBoard.xRes/2, -0.6f, sqr.zMinLim + gc.sBoard.zRes / 2), new Quaternion()).transform.parent = null;
+            dragTileGO.transform.parent = null;
+            dragTileGO.transform.position = new Vector3(sqr.xMinLim + gc.sBoard.xRes / 2, -0.6f, sqr.zMinLim + gc.sBoard.zRes / 2);
         }
     }
 
