@@ -236,6 +236,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: d6af4d93657c1424fb076909462f139f, type: 3}
   - {fileID: 21300000, guid: a4e97ea33d00caf45b2a571955b672c9, type: 3}
   failTileExplosion: {fileID: 139366, guid: b185c1a9cf067374586d095111b15bd1, type: 2}
+  winSprite: {fileID: 21300000, guid: 0541b6671ab71dd4bb2b4caa55eb6ba9, type: 3}
   kicking: 0
   chargedTime: 0
   stunned: 0

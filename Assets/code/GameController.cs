@@ -1,17 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 
 public class GameController : MonoBehaviour {
 
-	public List<GameObject> players;
+    [SerializeField] Image[] playerWinImg;
+
+    public List<GameObject> players;
     public GameObject autoFillTilePrefab;
     public SudokuBoard sBoard;
 
     private bool gameEnd = false;
     private float initWait = 2.0f;
-    private float autoFillTime = 0.5f;
+    private float autoFillTime = 0.05f;
     //private float initWait = 20.0f;
     //private float autoFillTime = 10.0f;
 
@@ -19,7 +22,20 @@ public class GameController : MonoBehaviour {
         sBoard = new SudokuBoard();
         StartCoroutine(AutoFillTiles());
     }
-	
+
+    void Update()
+    {
+        if (gameEnd)
+        {
+            List<int> winners = sBoard.GetWinnerList();
+            for (int i = 0; i < winners.Count; i++)
+            {
+                playerWinImg[i].enabled = true;
+                playerWinImg[i].sprite = players[winners[i]-1].GetComponent<PMove>().winSprite;
+            }
+        }
+    }
+
     IEnumerator AutoFillTiles()
     {
         yield return new WaitForSeconds(initWait);
