@@ -101,7 +101,7 @@ public class PMove : MonoBehaviour {
 
 		Timers();
 
-        if (dragTileNum != 0 && Input.GetButton("pd"+idStr)) HandleTileDrop();
+        if (dragTileNum != 0 && (Input.GetButton("pd"+idStr) || Input.GetKey(keys.a(idStr)))) HandleTileDrop();
         if ((Input.GetKeyDown(keys.b(idStr)) || Input.GetButtonDown("b"+idStr)) && !kicking && !stunned) Kick();
 		if ((Input.GetKeyUp  (keys.b(idStr)) || Input.GetButtonUp  ("b"+idStr)) && !stunned) KickRelease(); //this may get called while in standing kick multiple times
 
@@ -395,7 +395,7 @@ public class PMove : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if (dragTileNum == 0 && other.CompareTag("PickupTile") && Input.GetButton("pd"+idStr))
+        if (dragTileNum == 0 && other.CompareTag("PickupTile") && (Input.GetButton("pd"+idStr) || Input.GetKey(keys.a(idStr))))
         {
             dragTileNum = other.gameObject.GetComponent<ObjT>().id;
             dragTileGO = Instantiate(dragTilePrefab, tileSpawn);
