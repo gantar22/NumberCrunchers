@@ -6,6 +6,7 @@ using UnityEngine;
 public class PMove : MonoBehaviour {
 
 	public enum PS {quick,power,passive} //state
+	public enum TS {standing,walking,running} //travel state
 
     [SerializeField]
     GameObject spriteHolder;
@@ -33,6 +34,10 @@ public class PMove : MonoBehaviour {
 	Sprite[] walkSprites;
     [SerializeField]
     GameObject failTileExplosion;
+    
+    [SerializeField]
+    [Range(0f,1f)]
+    float timeToDash;
 
     [HideInInspector]
 	public bool kicking;
@@ -46,6 +51,8 @@ public class PMove : MonoBehaviour {
 	bool standing;
 	[SerializeField]
 	bool letgo;
+	[SerializeField]
+	bool walking;
     
     private Vector3 velo;
 	private Vector3 tarVelo;
@@ -57,6 +64,9 @@ public class PMove : MonoBehaviour {
 	private GameController gc;
 	private bool hit;
     private int playersHit;
+    private TS travel;
+    private Vector3 runningFace;
+    private int oldY;
 
     [SerializeField]
     Transform tileSpawn;
@@ -80,7 +90,8 @@ public class PMove : MonoBehaviour {
         else if (!(kicking || stunned || sliding || charging)) spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
 		if((!kicking && !stunned) || sliding) Move(); else velo = Vector3.zero; 
-		
+
+
 		//print(id + (kicking ? " kicking " : "") + (stunned ? " stunned " : "") + (sliding ? " sliding" : ""));
 		if(stunned) print(idStr);
 
@@ -106,16 +117,25 @@ public class PMove : MonoBehaviour {
 		}
 	}
 
-	void Orient(){	
+	void Orient(){
+		Transform t = spriteHolder.transform;
 		spriteHolder.GetComponent<SpriteRenderer>().flipX = sliding && (face.x < 0 || (face.x == 0 && face.z > 0));
         spriteHolder.GetComponent<SpriteRenderer>().flipY = sliding && (face.x < 0 || (face.x == 0 && face.z > 0));
 	
 
-		if(Mathf.Abs(velo.x) < .1 && !charging) transform.eulerAngles = new Vector3(transform.eulerAngles.x,Mathf.LerpAngle(transform.eulerAngles.y,transform.eulerAngles.y > 90 ? 180 : 0,Time.deltaTime * 5),transform.eulerAngles.z);
+		if(Mathf.Abs(velo.x) < .1 && !charging) t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.localEulerAngles.y,t.localEulerAngles.y > 90 ? 180 : 0,Time.deltaTime * 5),t.localEulerAngles.z);
 
 		if(Mathf.Abs(velo.x) < .1 && !charging) return;
-		if(face.x >  0) transform.eulerAngles = new Vector3(transform.eulerAngles.x,Mathf.LerpAngle(transform.eulerAngles.y,0  ,Time.deltaTime * 5),transform.eulerAngles.z);
-		if(face.x <  0) transform.eulerAngles = new Vector3(transform.eulerAngles.x,Mathf.LerpAngle(transform.eulerAngles.y,180,Time.deltaTime * 5),transform.eulerAngles.z);
+		if(face.x >  0) t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,0  ,Time.deltaTime * 6) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.localEulerAngles.y,0  ,Time.deltaTime * 6),t.localEulerAngles.z);
+		if(face.x <  0) t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,180,Time.deltaTime * 6) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.localEulerAngles.y,180,Time.deltaTime * 6),t.localEulerAngles.z);
+		if(face.x == 0) {
+			if(oldY == 1)
+				t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,180,Time.deltaTime * 6) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.eulerAngles.y,180,Time.deltaTime * 5),t.localEulerAngles.z);
+			if(oldY == -1)
+				t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,0  ,Time.deltaTime * 6) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.eulerAngles.y,0  ,Time.deltaTime * 5),t.localEulerAngles.z);
+		}
+		if(face.y > 0) oldY =  1;
+		if(face.y < 0) oldY = -1; 
 	}
 
 	void Timers(){
@@ -128,7 +148,7 @@ public class PMove : MonoBehaviour {
 			kicking = true;
 			sliding = true;
             spriteHolder.GetComponent<SpriteRenderer>().sprite = slideSprite;
-			transform.Rotate(Vector3.forward * 90 * face.x);
+			spriteHolder.transform.Rotate(Vector3.forward * 90 * face.x);
 		} else {
 			charging = true;
             spriteHolder.GetComponent<SpriteRenderer>().sprite = chargeSprite;
@@ -142,7 +162,7 @@ public class PMove : MonoBehaviour {
 			kicking = false;
 			chargedTime = 0;
 			sliding = false;
-			transform.Rotate(Vector3.back * 90 * face.x);
+			spriteHolder.transform.Rotate(Vector3.back * 90 * face.x);
 			stunned = true;
 			Invoke("unoof",.1f);
 		} else {
@@ -212,14 +232,19 @@ public class PMove : MonoBehaviour {
     }
 
 
+    void setMoving(){
+    	CancelInvoke("setMoving");
+    	if(travel == TS.standing) travel = TS.walking; 
+    }
+
 
     void Move(){
 		//naive
 		//transform.position += new Vector3(Input.GetAxis("HorizontalJ") * mSpeed,0f,Input.GetAxis("VerticalJ") * mSpeed);
 
 
-		Vector3 joy = new Vector3(Input.GetAxis("HorizontalJ" + idStr),
-			                    0,Input.GetAxis("VerticalJ"  + idStr));
+		Vector3 joy = new Vector3(Input.GetAxisRaw("HorizontalJ" + idStr),
+			                    0,Input.GetAxisRaw("VerticalJ"  + idStr));
 
 		if(sliding){
 			velo = Vector3.Lerp(velo,Vector3.zero,Time.deltaTime / velo.magnitude);
@@ -229,19 +254,48 @@ public class PMove : MonoBehaviour {
 
 		face = new Vector3(joy.x > 0 ? 1 : (joy.x == 0 ? 0 : -1),0,joy.z > 0 ? 1 : (joy.z == 0 ? 0 : -1));
 
+
 		if(charging) return;
 
 		//if(joy.magnitude > .01f) GetComponent<Animator>().SetBool("walking",true);
 
 
-		if(Mathf.Abs(joy.x) < .9f && Mathf.Abs(joy.z) < .9f){
+		if(joy.magnitude < .1f) {
+			travel = TS.standing;
+
+		}else if(joy.magnitude < .5f && walking){
 			transform.position += joy * mSpeed;
 			velo = Vector3.zero;
 			tarVelo = Vector3.zero;
+			if(travel == TS.standing) Invoke("setMoving",timeToDash);
+			else travel = TS.walking;
 			return;
 		}
 
-        spriteHolder.GetComponent<SpriteRenderer>().sprite = walkSprites[(int)((Time.time * 4) % walkSprites.Length)];
+		if(face != runningFace && travel == TS.running){
+			velo = Vector3.zero;
+			tarVelo = Vector3.zero;
+			travel = TS.walking;
+			Invoke("setMoving",timeToDash);
+		}
+
+
+
+		if((joy.magnitude > .9f) && travel == TS.standing){
+			travel = TS.running;
+			runningFace = face;
+			print("dash");
+		}
+		if((joy.magnitude < .9f) && travel == TS.running){
+			travel = TS.standing;
+			if(travel == TS.standing) Invoke("setMoving",2 * timeToDash);
+		}
+
+
+
+
+        spriteHolder.GetComponent<SpriteRenderer>().sprite =
+        		 walkSprites[(int)((Time.time * (travel == TS.running ? 6 : 4)) % walkSprites.Length)];
 		//print(Time.time.ToString() + " : " + ((Time.time * 4) % walkSprites.Length).ToString() + " > " + ((int)(( 4 * Time.time) % walkSprites.Length)).ToString());
 
 		tarVelo = new Vector3(joy.x,0,joy.z);
@@ -259,8 +313,10 @@ public class PMove : MonoBehaviour {
 			}
 		}
 
-		if(standing) tarVelo += new Vector3(velo.x == 0 && Sqr(joy.x) > .9f ? 500 * tarVelo.x * Time.deltaTime : 0,0, velo.z == 0 && Sqr(joy.z) > .9f ? 500 * tarVelo.z * Time.deltaTime : 0); //slam
+
+		//if(standing) tarVelo += new Vector3(velo.x == 0 && Sqr(joy.x) > .9f ? 500 * tarVelo.x * Time.deltaTime : 0,0, velo.z == 0 && Sqr(joy.z) > .9f ? 500 * tarVelo.z * Time.deltaTime : 0); //slam
 		
+
 		float dragH = 1;
 		float dragV = 1;
 
@@ -277,8 +333,11 @@ public class PMove : MonoBehaviour {
 
 		float diagonalC = Mathf.Clamp(Mathf.Pow(Sqr(velo.x)+Sqr(velo.z),.5f) - 1,0,2);
 
-		transform.position += velo * (mSpeed / (diagonalC + 1));
-
+		if(travel == TS.running){
+			transform.position += face * (mSpeed * 1.1f / (diagonalC + 1));
+		} else {
+			transform.position += velo * (mSpeed / (diagonalC + 1));
+		}
 
 		if(velo.x > 0) face.x =  1;
 		if(velo.y < 0) face.x = -1;
@@ -286,6 +345,9 @@ public class PMove : MonoBehaviour {
 		if(velo.z < 0) face.z = -1;
 
 	}
+
+
+
 
 	float Sqr(float x){
 		return Mathf.Pow(x,2);
