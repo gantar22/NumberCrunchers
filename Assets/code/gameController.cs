@@ -54,4 +54,8 @@ public class GameController : MonoBehaviour {
             }
         }
     }
+
+    static public void QuitGame(){
+    	Application.Quit();
+    }
 }

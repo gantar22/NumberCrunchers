@@ -68,7 +68,8 @@ public class PMove : MonoBehaviour {
     private int playersHit;
     private TS travel;
     private Vector3 runningFace;
-    private int oldY;
+    private int oldX;
+    private float timeSinceStanding;
 
     [SerializeField]
     Transform tileSpawn;
@@ -126,19 +127,20 @@ public class PMove : MonoBehaviour {
         spriteHolder.GetComponent<SpriteRenderer>().flipY = sliding && (face.x < 0 || (face.x == 0 && face.z > 0));
 	
 
-		if(Mathf.Abs(velo.x) < .1 && !charging) t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.localEulerAngles.y,t.localEulerAngles.y > 90 ? 180 : 0,Time.deltaTime * 5),t.localEulerAngles.z);
+		if(Mathf.Abs(velo.x) < .1 && charging) t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,t.localEulerAngles.y > 90 ? 180 : 0,Time.deltaTime * 4) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.localEulerAngles.y,t.localEulerAngles.y > 90 ? 180 : 0,Time.deltaTime * 5),t.localEulerAngles.z);
 
-		if(Mathf.Abs(velo.x) < .1 && !charging) return;
-		if(face.x >  0) t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,0  ,Time.deltaTime * 6) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.localEulerAngles.y,0  ,Time.deltaTime * 6),t.localEulerAngles.z);
-		if(face.x <  0) t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,180,Time.deltaTime * 6) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.localEulerAngles.y,180,Time.deltaTime * 6),t.localEulerAngles.z);
+		if(Mathf.Abs(velo.x) < .1 && charging) return;
+		if(face.x >  0) t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,0  ,Time.deltaTime * 4) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.localEulerAngles.y,0  ,Time.deltaTime * 6),t.localEulerAngles.z);
+		if(face.x <  0) t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,180,Time.deltaTime * 4) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.localEulerAngles.y,180,Time.deltaTime * 6),t.localEulerAngles.z);
 		if(face.x == 0) {
-			if(oldY == 1)
-				t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,180,Time.deltaTime * 6) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.eulerAngles.y,180,Time.deltaTime * 5),t.localEulerAngles.z);
-			if(oldY == -1)
-				t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,0  ,Time.deltaTime * 6) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.eulerAngles.y,0  ,Time.deltaTime * 5),t.localEulerAngles.z);
+			if(oldX == 1)
+				t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,  0,Time.deltaTime * 4) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.eulerAngles.y,180,Time.deltaTime * 5),t.localEulerAngles.z);
+			if(oldX == -1)
+				t.Rotate(new Vector3(0,Mathf.LerpAngle(t.localEulerAngles.y,180,Time.deltaTime * 4) - t.localEulerAngles.y,0));//t.localEulerAngles = new Vector3(t.localEulerAngles.x,Mathf.LerpAngle(t.eulerAngles.y,0  ,Time.deltaTime * 5),t.localEulerAngles.z);
 		}
-		if(face.y > 0) oldY =  1;
-		if(face.y < 0) oldY = -1; 
+		if(face.x > 0) oldX =  1;
+		if(face.x < 0) oldX = -1; 
+		t.localEulerAngles = new Vector3(0,t.localEulerAngles.y,t.localEulerAngles.z);
 	}
 
 	void Timers(){
@@ -242,12 +244,25 @@ public class PMove : MonoBehaviour {
 
 
     void Move(){
+
 		//naive
 		//transform.position += new Vector3(Input.GetAxis("HorizontalJ") * mSpeed,0f,Input.GetAxis("VerticalJ") * mSpeed);
 
 
 		Vector3 joy = new Vector3(Input.GetAxisRaw("HorizontalJ" + idStr),
 			                    0,Input.GetAxisRaw("VerticalJ"  + idStr));
+		//if(id == 2 && joy.magnitude > .9f) print(joy);
+		if(joy.magnitude == 0) timeSinceStanding = Time.time;
+		if(joy.magnitude == 1 && timeSinceStanding != 0) {
+			if(Time.time - timeSinceStanding < .5f) travel = TS.running;
+			timeSinceStanding = 0;
+		}
+		if(joy.magnitude < 1 && joy.magnitude != 0) {
+			travel = TS.walking;
+		}
+		if(travel == TS.running && face.x * joy.x < 0){
+			travel = TS.walking;
+		}
 
 		if(sliding){
 			velo = Vector3.Lerp(velo,Vector3.zero,Time.deltaTime / velo.magnitude);
@@ -262,18 +277,18 @@ public class PMove : MonoBehaviour {
 
 		//if(joy.magnitude > .01f) GetComponent<Animator>().SetBool("walking",true);
 
-
+		/*
 		if(joy.magnitude < .1f) {
 			travel = TS.standing;
 
-		}else if(joy.magnitude < .5f && walking){
+		}else if(joy.magnitude < .9f && walking){
 			transform.position += joy * mSpeed;
 			velo = Vector3.zero;
 			tarVelo = Vector3.zero;
 			if(travel == TS.standing) Invoke("setMoving",timeToDash);
 			else travel = TS.walking;
 			return;
-		}
+		}a
 
 		if(face != runningFace && travel == TS.running){
 			velo = Vector3.zero;
@@ -284,15 +299,15 @@ public class PMove : MonoBehaviour {
 
 
 
-		if((joy.magnitude > .9f) && travel == TS.standing){
+		if((joy.magnitude > .95f) && travel == TS.standing){
 			travel = TS.running;
 			runningFace = face;
 			print("dash");
 		}
-		if((joy.magnitude < .9f) && travel == TS.running){
+		if((joy.magnitude < .95f) && travel == TS.running){
 			travel = TS.standing;
 			if(travel == TS.standing) Invoke("setMoving",2 * timeToDash);
-		}
+		}*/
 
 
 
