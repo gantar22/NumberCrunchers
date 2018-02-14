@@ -330,7 +330,7 @@ public class PMove : MonoBehaviour {
 			if((velo.z * tarVelo.z < 0 && velo.x * tarVelo.x <= 0)
 				|| (velo.z * tarVelo.z <= 0 && velo.x * tarVelo.x < 0)){
 				stunned = true;
-				Invoke("Unoof",.05f);
+				Invoke("Unoof",.1f);
 			}
 		}
 		if(turning){

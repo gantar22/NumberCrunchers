@@ -68,15 +68,15 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1766937024199494}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.79, y: 0, z: 0}
+  m_LocalRotation: {x: 0.2588191, y: -0, z: -0, w: 0.9659258}
+  m_LocalPosition: {x: 3.4, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4913816491621598}
   - {fileID: 4742722131396654}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
 --- !u!4 &4742722131396654
 Transform:
   m_ObjectHideFlags: 1
@@ -235,8 +235,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteHolder: {fileID: 1969122292152718}
-  mSpeed: 0.1
-  rampFactor: 1
+  mSpeed: 0.15
+  rampFactor: 5
   dragFactor: 100
   maxSpeed: 1
   chargeSprite: {fileID: 21300000, guid: e5925c2a92fbd314b81354901afbc40a, type: 3}
@@ -249,13 +249,15 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 73ab42157f765974f81dce59a7f86355, type: 3}
   - {fileID: 21300000, guid: 98d408acf0d41ad42a4895e5210518c7, type: 3}
   failTileExplosion: {fileID: 139366, guid: b185c1a9cf067374586d095111b15bd1, type: 2}
-  winSprite: {fileID: 21300000, guid: 0aa9fbcbcf65d5f4b884c0e6334a7fab, type: 3}
+  timeToDash: 0.15
   kicking: 0
   chargedTime: 0
   stunned: 0
+  winSprite: {fileID: 21300000, guid: 0aa9fbcbcf65d5f4b884c0e6334a7fab, type: 3}
   turning: 1
   standing: 1
-  letgo: 0
+  letgo: 1
+  walking: 1
   tileSpawn: {fileID: 4913816491621598}
   dragTilePrefab: {fileID: 1035017609491326, guid: 0a3abb53c977aff448347975cf696252,
     type: 2}
