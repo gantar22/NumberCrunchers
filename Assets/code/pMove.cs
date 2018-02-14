@@ -257,6 +257,7 @@ public class PMove : MonoBehaviour {
 			if(Time.time - timeSinceStanding < .5f) travel = TS.running;
 			timeSinceStanding = 0;
 		}
+
 		if(joy.magnitude < 1 && joy.magnitude != 0) {
 			travel = TS.walking;
 		}
@@ -317,14 +318,21 @@ public class PMove : MonoBehaviour {
 		//print(Time.time.ToString() + " : " + ((Time.time * 4) % walkSprites.Length).ToString() + " > " + ((int)(( 4 * Time.time) % walkSprites.Length)).ToString());
 
 		tarVelo = new Vector3(joy.x,0,joy.z);
-		/*if(turning){
-			if(velo.x * tarVelo.x < 0){
+
+		if(turning){
+			/*if(velo.x * tarVelo.x < 0){
 				velo = new Vector3(0,0,velo.z);
 			}
 			if(velo.z * tarVelo.z < 0){
 				velo = new Vector3(velo.x,0,0);
-			} //turning doesn't keep momentum
-		}*/
+			}*/ //turning doesn't keep momentum
+
+			if((velo.z * tarVelo.z < 0 && velo.x * tarVelo.x <= 0)
+				|| (velo.z * tarVelo.z <= 0 && velo.x * tarVelo.x < 0)){
+				stunned = true;
+				Invoke("Unoof",.05f);
+			}
+		}
 		if(turning){
 			if(velo.z * tarVelo.z <= 0 && velo.x * tarVelo.x <= 0){
 				velo *= Time.deltaTime/2;
@@ -339,8 +347,8 @@ public class PMove : MonoBehaviour {
 		float dragV = 1;
 
 		if(letgo){
-			dragH = (joy.x == 0 ? (joy.z == 0 ? Sqr(dragFactor * velo.x) + dragFactor : rampFactor) : rampFactor);
-			dragV = (joy.z == 0 ? (joy.x == 0 ? Sqr(dragFactor * velo.z) + dragFactor : rampFactor) : rampFactor);
+			dragH = (joy.x == 0 ? (joy.z == 0 ? Sqr(dragFactor * velo.x) : rampFactor) : rampFactor);
+			dragV = (joy.z == 0 ? (joy.x == 0 ? Sqr(dragFactor * velo.z) : rampFactor) : rampFactor);
 		}
 
 		float deltaH = Mathf.Lerp(velo.x,tarVelo.x,Time.deltaTime * dragH);
@@ -351,11 +359,13 @@ public class PMove : MonoBehaviour {
 
 		float diagonalC = Mathf.Clamp(Mathf.Pow(Sqr(velo.x)+Sqr(velo.z),.5f) - 1,0,2);
 
-		if(travel == TS.running){
-			transform.position += face * (mSpeed * 1.1f / (diagonalC + 1));
+		/*if(travel == TS.running){
+		//	transform.position += face * (mSpeed * 1.1f / (diagonalC + 1));
 		} else {
 			transform.position += velo * (mSpeed / (diagonalC + 1));
-		}
+		}*/
+
+		transform.position += velo * (mSpeed / (diagonalC + 1));
 
 		if(velo.x > 0) face.x =  1;
 		if(velo.y < 0) face.x = -1;
