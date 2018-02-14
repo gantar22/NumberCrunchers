@@ -20,7 +20,13 @@ public class SudokuBoard {
 
     public Square[,] boardSquares = new Square[9, 9];
 
-    int[,] boardSol = new int[,] {
+
+    public SudokuBoard ()
+    {
+        xRes = (xLims[1] - xLims[0]) / 9;
+        zRes = (zLims[1] - zLims[0]) / 9;
+
+        int[,] boardSol = new int[,] {
             { 4, 3, 5, 2, 6, 9, 7, 8, 1},
             { 6, 8, 2, 5, 7, 1, 4, 9, 3},
             { 1, 9, 7, 8, 3, 4, 5, 6, 2},
@@ -31,7 +37,7 @@ public class SudokuBoard {
             { 2, 4, 8, 9, 5, 7, 1, 3, 6},
             { 7, 6, 3, 4, 1, 8, 2, 5, 9} };
 
-    int[,] boardFill = new int[,] {
+        int[,] boardFill = new int[,] {
             { 4, 3, 5, 2, 6, 0, 7, 0, 1},
             { 0, 0, 2, 0, 7, 0, 0, 9, 0},
             { 0, 0, 7, 0, 0, 4, 5, 0, 2},
@@ -41,11 +47,6 @@ public class SudokuBoard {
             { 0, 0, 9, 3, 0, 0, 0, 7, 4},
             { 0, 4, 0, 0, 5, 0, 0, 3, 6},
             { 7, 0, 3, 0, 1, 8, 0, 0, 0} };
-
-    public SudokuBoard ()
-    {
-        xRes = (xLims[1] - xLims[0]) / 9;
-        zRes = (zLims[1] - zLims[0]) / 9;
 
         for (int i = 0; i < 9; i++)
         {
@@ -98,5 +99,29 @@ public class SudokuBoard {
             squareToFill.ownedBy = player;
         }
         return squareToFill;
+    }
+
+    public List<int> GetWinnerList()
+    {
+        List<int> winList = new List<int>();
+        List<int> tileCount = new List<int>(new int[] {0, 0, 0, 0});
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                int own = boardSquares[i, j].ownedBy;
+                Debug.Log(own);
+                if (own != 0 && own != -1) tileCount[own-1]++; 
+            }
+        }
+        List<int> sortList = new List<int>(tileCount);
+        sortList.Sort();
+        for (int i = 0; i < 4; i++)
+        {
+            if (sortList[0] == tileCount[i]) winList.Add(i+1); 
+        }
+        Debug.Log(sortList.ToString());
+        Debug.Log(winList.ToString());
+        return winList;
     }
 }

@@ -33,14 +33,16 @@ public class PMove : MonoBehaviour {
 	Sprite[] walkSprites;
     [SerializeField]
     GameObject failTileExplosion;
-
+    
     [HideInInspector]
 	public bool kicking;
 	[HideInInspector]
 	public float chargedTime;
 	[HideInInspector]
 	public bool stunned;
-	[SerializeField]
+    public Sprite winSprite;
+
+    [SerializeField]
 	bool turning;
 	[SerializeField]
 	bool standing;
