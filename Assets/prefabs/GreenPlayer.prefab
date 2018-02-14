@@ -81,15 +81,15 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1133665714781062}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.22, y: 0, z: 0}
+  m_LocalRotation: {x: 0.2588191, y: -0, z: -0, w: 0.9659258}
+  m_LocalPosition: {x: -4.1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4277249694666458}
   - {fileID: 4544229242300810}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
 --- !u!4 &4544229242300810
 Transform:
   m_ObjectHideFlags: 1
@@ -222,8 +222,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteHolder: {fileID: 1050162324985692}
-  mSpeed: 0.1
-  rampFactor: 1
+  mSpeed: 0.15
+  rampFactor: 5
   dragFactor: 100
   maxSpeed: 1
   chargeSprite: {fileID: 21300000, guid: ff6f07b39cf7d9743a5b578b019aa731, type: 3}
@@ -231,18 +231,20 @@ MonoBehaviour:
   slideSprite: {fileID: 21300000, guid: c30e76278f60ce74f9124ae132324fc2, type: 3}
   standingSprite: {fileID: 21300000, guid: 0541b6671ab71dd4bb2b4caa55eb6ba9, type: 3}
   oofSprite: {fileID: 21300000, guid: 80c5c7928e34f534fabd6ae44af5214f, type: 3}
-  dragSprite: {fileID: 21300000, guid: ff6f07b39cf7d9743a5b578b019aa731, type: 3}
+  dragSprite: {fileID: 21300000, guid: 47943274e697d9b499bb7bc11350b943, type: 3}
   walkSprites:
   - {fileID: 21300000, guid: d6af4d93657c1424fb076909462f139f, type: 3}
   - {fileID: 21300000, guid: a4e97ea33d00caf45b2a571955b672c9, type: 3}
   failTileExplosion: {fileID: 139366, guid: b185c1a9cf067374586d095111b15bd1, type: 2}
-  winSprite: {fileID: 21300000, guid: 0541b6671ab71dd4bb2b4caa55eb6ba9, type: 3}
+  timeToDash: 0.15
   kicking: 0
   chargedTime: 0
   stunned: 0
+  winSprite: {fileID: 21300000, guid: 0541b6671ab71dd4bb2b4caa55eb6ba9, type: 3}
   turning: 1
   standing: 1
-  letgo: 0
+  letgo: 1
+  walking: 1
   tileSpawn: {fileID: 4277249694666458}
   dragTilePrefab: {fileID: 1035017609491326, guid: 0a3abb53c977aff448347975cf696252,
     type: 2}
