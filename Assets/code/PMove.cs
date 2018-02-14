@@ -310,7 +310,6 @@ public class PMove : MonoBehaviour {
         {
             dragTileNum = other.gameObject.GetComponent<ObjT>().id;
             dragTileGO = Instantiate(dragTilePrefab, tileSpawn);
-            dragTileGO.GetComponent<BoxCollider>().enabled = false;
             dragTileGO.GetComponentInChildren<SpriteRenderer>().sprite = dragTileSprite;
             dragTileGO.transform.GetChild(0).transform.localScale = new Vector3(0.15f, 0.14f, 0);
         }
