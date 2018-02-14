@@ -20,7 +20,6 @@ public class SudokuBoard {
 
     public Square[,] boardSquares = new Square[9, 9];
 
-
     int[,] boardSol = new int[,] {
             { 4, 3, 5, 2, 6, 9, 7, 8, 1},
             { 6, 8, 2, 5, 7, 1, 4, 9, 3},
@@ -59,9 +58,7 @@ public class SudokuBoard {
                                                 8-i,
                                                 j,
                                                 (xLims[0]+j*xRes),
-                                                (xLims[0]+(j+1)*xRes),
-                                                (zLims[0]+i*zRes),
-                                                (xLims[0]+(i+1)*zRes));
+                                                (zLims[0]+i*zRes));
             }
         }
     }
