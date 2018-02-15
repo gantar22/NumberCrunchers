@@ -16,8 +16,9 @@ public class GameController : MonoBehaviour {
     private bool gameEnd = false;
     //private float initWait = 2.0f;
     //private float autoFillTime = 0.05f;
-    private float initWait = 20.0f;
-    private float autoFillTime = 10.0f;
+    private float initWait = 1.0f;
+    private float autoSpawnTime = 1.0f;
+    private float autoFillTime = 1.0f;
 
     void Start () {
         sBoard = new SudokuBoard();
@@ -45,11 +46,11 @@ public class GameController : MonoBehaviour {
             Square autoFillSquare = sBoard.FillRandSquare();
             if (autoFillSquare != null)
             {
+                yield return new WaitForSeconds(autoSpawnTime);
                 Vector3 fillPos = new Vector3(autoFillSquare.xMinLim + (sBoard.xRes / 2), -0.6f, autoFillSquare.zMinLim + (sBoard.zRes / 2));
                 GameObject autoFillTile = Instantiate(autoFillTilePrefab, fillPos, new Quaternion());
-                Debug.Log(autoFillSquare.fillNum);
-                autoFillTile.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = tileNumSprites[autoFillSquare.fillNum-1];
                 yield return new WaitForSeconds(autoFillTime);
+                autoFillTile.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = tileNumSprites[autoFillSquare.fillNum-1];
             }
             else
             {
