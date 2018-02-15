@@ -92,15 +92,20 @@ public class PMove : MonoBehaviour {
 	}
 
 	void Update () {
+
 		//GetComponent<Animator>().SetBool("walking",false);
 		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
+
+		transform.position = new Vector3(Mathf.Clamp(transform.position.x,-4.5f,4.5f),0,Mathf.Clamp(transform.position.z,-4,4));
+
+
 
         if (dragTileNum != 0)                                  spriteHolder.GetComponent<SpriteRenderer>().sprite = dragSprite;
         else if (!(kicking || stunned || sliding || charging)) spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
 		if((!kicking && !stunned) || sliding) Move(); else velo = Vector3.zero; 
 		if(!(kicking || stunned || sliding || charging) && Input.GetKeyDown(keys.x(idStr))) dodge(); 
-		if(Input.GetKeyUp(keys.x(idStr))){dodging = false; stunned = false;}
+		if(Input.GetKeyUp(keys.x(idStr))){dodging = false; stunned = false;spriteHolder.GetComponent<SpriteRenderer>().color  = new Color(1,1,1,1);}
 
 		//print(id + (kicking ? " kicking " : "") + (stunned ? " stunned " : "") + (sliding ? " sliding" : ""));
 		//if(stunned) print(idStr);
@@ -132,6 +137,7 @@ public class PMove : MonoBehaviour {
 	void dodge(){
 		stunned = true;
 		spriteHolder.GetComponent<SpriteRenderer>().sprite = backSprite;
+		spriteHolder.GetComponent<SpriteRenderer>().color  = new Color(.8f,.8f,.8f,.9f);
 		dodging = true;
 	}
 
@@ -387,7 +393,6 @@ public class PMove : MonoBehaviour {
 			transform.position += velo * (mSpeed * .5f / (diagonalC + 1));
 
 
-		transform.position = new Vector3(Mathf.Clamp(transform.position.x,-4.5f,4.5f),0,Mathf.Clamp(transform.position.z,-4,4));
 
 		if(velo.x > 0) face.x =  1;
 		if(velo.y < 0) face.x = -1;

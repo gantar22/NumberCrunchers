@@ -23,6 +23,10 @@ public class GameController : MonoBehaviour {
         StartCoroutine(AutoFillTiles());
     }
 
+    void OnAwake(){
+        Cursor.visible = false;
+    }
+
     void Update()
     {
         if (gameEnd)
