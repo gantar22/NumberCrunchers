@@ -84,21 +84,20 @@ public class SudokuBoard {
         return squareToFill;
     }
 
-    public Square TryClaimSquare(int sol, int player, Transform tilePos)
+    public Square TransformToSquare(Transform tilePos)
     {
         if (tilePos.position.x < xLims[0] || tilePos.position.x > xLims[1] ||
             tilePos.position.z < zLims[0] || tilePos.position.z > zLims[1])
         {
             return null;
         }
-        Square squareToFill =  boardSquares[(int)(8 - Mathf.Clamp(Mathf.Floor((tilePos.position.z - zLims[0]) / zRes), 0, 8)),
-                                            (int)Mathf.Clamp(Mathf.Floor((tilePos.position.x - xLims[0]) / xRes), 0, 8)];
-        if (squareToFill.solNum == sol && squareToFill.ownedBy == 0)
-        {
-            squareToFill.fillNum = sol;
-            squareToFill.ownedBy = player;
-        }
-        return squareToFill;
+        return boardSquares[(int)(8 - Mathf.Clamp(Mathf.Floor((tilePos.position.z - zLims[0]) / zRes), 0, 8)),
+                            (int)Mathf.Clamp(Mathf.Floor((tilePos.position.x - xLims[0]) / xRes), 0, 8)];
+    }
+
+    public void SetSquare(Square sqr)
+    {
+        boardSquares[sqr.row, sqr.col] = sqr;
     }
 
     public List<int> GetWinnerList()

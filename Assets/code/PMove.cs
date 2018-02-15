@@ -72,6 +72,7 @@ public class PMove : MonoBehaviour {
     private Vector3 runningFace;
     private int oldX;
     private float timeSinceStanding;
+    private int powerUpCount = 0;
 
 
     [SerializeField]
@@ -230,10 +231,10 @@ public class PMove : MonoBehaviour {
     {
         if (dragTileGO == null) return;
 
-        Square sqr  = gc.sBoard.TryClaimSquare(dragTileNum, id, dragTileGO.transform);
+        Square sqr  = gc.sBoard.TransformToSquare(dragTileGO.transform);
 
         if (sqr == null) return;
-        else if (sqr.solNum != sqr.fillNum || sqr.ownedBy != id)
+        else if (sqr.solNum != dragTileNum)
         {
             dragTileNum = 0;
             Destroy(dragTileGO);
@@ -243,11 +244,20 @@ public class PMove : MonoBehaviour {
             explosion.GetComponentInChildren<SpriteRenderer>().sortingOrder = 2;
             Destroy(explosion, 1.0f);
         }
-        else
+        else if (sqr.ownedBy == 0)
         {
             dragTileNum = 0;
             dragTileGO.transform.parent = null;
             dragTileGO.transform.position = new Vector3(sqr.xMinLim + gc.sBoard.xRes / 2, -0.6f, sqr.zMinLim + gc.sBoard.zRes / 2);
+            if (sqr.fillNum == -1)
+            {
+                powerUpCount++;
+                if (powerUpCount >= 3)
+                {
+                    powerUpCount = 0;
+                    /* [KBK] Grant powerup */
+                }
+            }
         }
     }
 
