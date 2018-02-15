@@ -328,6 +328,8 @@ MonoBehaviour:
   stunned: 0
   winSprite: {fileID: 21300000, guid: 21e044d0e6de09e4c95e8199c820c3de, type: 3}
   dodging: 0
+  highlighting: 0
+  score: 0
   turning: 1
   standing: 1
   letgo: 1
@@ -336,7 +338,9 @@ MonoBehaviour:
   dragTilePrefab: {fileID: 1035017609491326, guid: 0a3abb53c977aff448347975cf696252,
     type: 2}
   dragTileSprite: {fileID: 21300000, guid: 57a06d431fd947346b44392cef695cd5, type: 3}
-  backSprite: {fileID: 0}
+  backSprite: {fileID: 21300000, guid: bedb7363386b8449ca597a1468817a73, type: 3}
+  highlightsprite1: {fileID: 21300000, guid: d47821624ac74470d936acc05c3c64fa, type: 3}
+  highlightsprite2: {fileID: 21300000, guid: 9201a76f49032466fab1a824a430ff2b, type: 3}
 --- !u!212 &212181282993439976
 SpriteRenderer:
   m_ObjectHideFlags: 1
