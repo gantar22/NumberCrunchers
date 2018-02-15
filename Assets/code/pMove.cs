@@ -2,6 +2,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using XInputDotNetPure;
 
 public class PMove : MonoBehaviour {
 
@@ -123,10 +124,12 @@ public class PMove : MonoBehaviour {
 			for(int i = 0; i < gc.players.Count; i++){
 				if(gameObject != gc.players[i] && gc.players[i].GetComponent<BoxCollider>().bounds.Intersects(GetComponent<BoxCollider>().bounds)){
 							if(playersHit >> gc.players[i].GetComponent<ObjT>().id == 0 && !gc.players[i].GetComponent<PMove>().dodging)
-							{gc.players[i].GetComponent<PMove>().GotKicked(chargedTime);
-							playersHit += ((playersHit >> gc.players[i].GetComponent<ObjT>().id) + 1) << gc.players[i].GetComponent<ObjT>().id;
-							GetComponent<AudioSource>().volume = .5f + (chargedTime);
-							GetComponent<AudioSource>().Play();
+							{
+								gc.players[i].GetComponent<PMove>().GotKicked(chargedTime);
+								playersHit += ((playersHit >> gc.players[i].GetComponent<ObjT>().id) + 1) << gc.players[i].GetComponent<ObjT>().id;
+								GetComponent<AudioSource>().volume = .5f + (chargedTime);
+								GetComponent<AudioSource>().Play();
+								Camera.main.GetComponent<CameraShakeScript>().activate(.05f,.05f);
 							} 
 				}
 			}
@@ -214,6 +217,7 @@ public class PMove : MonoBehaviour {
 	void Unoof(){
 		stunned = false;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
+
 	}
 
 	public void LandKick(){
@@ -225,11 +229,17 @@ public class PMove : MonoBehaviour {
 	}
 
 	public void GotKicked(float time){
+        GamePad.SetVibration((PlayerIndex)(id - 1), .5f,.5f);
 		if(stunned) return;
 		stunned = true;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
 		Invoke("Unoof",time + 1f);
+		Invoke("unshake",.3f);
 
+	}
+
+	void unshake(){
+		GamePad.SetVibration((PlayerIndex)(id - 1), 0f,0f);
 	}
 
     private void HandleTileDrop()
