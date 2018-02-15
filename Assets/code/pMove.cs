@@ -46,6 +46,8 @@ public class PMove : MonoBehaviour {
 	[HideInInspector]
 	public bool stunned;
     public Sprite winSprite;
+    [HideInInspector]
+    public bool dodging;
 
     [SerializeField]
 	bool turning;
@@ -71,12 +73,15 @@ public class PMove : MonoBehaviour {
     private int oldX;
     private float timeSinceStanding;
 
+
     [SerializeField]
     Transform tileSpawn;
     [SerializeField]
     GameObject dragTilePrefab;
     [SerializeField]
     Sprite dragTileSprite;
+    [SerializeField]
+    Sprite backSprite;
 
     private int dragTileNum = 0;
     private GameObject dragTileGO;
@@ -94,23 +99,25 @@ public class PMove : MonoBehaviour {
         else if (!(kicking || stunned || sliding || charging)) spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
 		if((!kicking && !stunned) || sliding) Move(); else velo = Vector3.zero; 
-
+		if(!(kicking || stunned || sliding || charging) && Input.GetKeyDown(keys.x(idStr))) dodge(); 
+		if(Input.GetKeyUp(keys.x(idStr))){dodging = false; stunned = false;}
 
 		//print(id + (kicking ? " kicking " : "") + (stunned ? " stunned " : "") + (sliding ? " sliding" : ""));
-		if(stunned) print(idStr);
+		//if(stunned) print(idStr);
 
 		Timers();
 
-        if (dragTileNum != 0 && (Input.GetButton("pd"+idStr) || Input.GetKey(keys.a(idStr)))) HandleTileDrop();
+        if (dragTileNum != 0 && (Input.GetButtonUp("pd"+idStr) || Input.GetKeyUp(keys.a(idStr)))) HandleTileDrop();
         if ((Input.GetKeyDown(keys.b(idStr)) || Input.GetButtonDown("b"+idStr)) && !kicking && !stunned) Kick();
 		if ((Input.GetKeyUp  (keys.b(idStr)) || Input.GetButtonUp  ("b"+idStr)) && !stunned) KickRelease(); //this may get called while in standing kick multiple times
 
-        Orient();
+        if(dragTileNum == 0 && !dodging) Orient();
+        else spriteHolder.transform.Rotate(new Vector3(0,Mathf.LerpAngle(spriteHolder.transform.localEulerAngles.y,spriteHolder.transform.localEulerAngles.y > 90 ? 180 : 0,Time.deltaTime * 4) - spriteHolder.transform.localEulerAngles.y,0));
 
         if (kicking){
 			for(int i = 0; i < gc.players.Count; i++){
 				if(gameObject != gc.players[i] && gc.players[i].GetComponent<BoxCollider>().bounds.Intersects(GetComponent<BoxCollider>().bounds)){
-							if(playersHit >> gc.players[i].GetComponent<ObjT>().id == 0)
+							if(playersHit >> gc.players[i].GetComponent<ObjT>().id == 0 && !gc.players[i].GetComponent<PMove>().dodging)
 							{gc.players[i].GetComponent<PMove>().GotKicked(chargedTime);
 							playersHit += ((playersHit >> gc.players[i].GetComponent<ObjT>().id) + 1) << gc.players[i].GetComponent<ObjT>().id;
 							GetComponent<AudioSource>().volume = .5f + (chargedTime);
@@ -120,6 +127,14 @@ public class PMove : MonoBehaviour {
 			}
 		}
 	}
+
+
+	void dodge(){
+		stunned = true;
+		spriteHolder.GetComponent<SpriteRenderer>().sprite = backSprite;
+		dodging = true;
+	}
+
 
 	void Orient(){
 		Transform t = spriteHolder.transform;
@@ -169,23 +184,23 @@ public class PMove : MonoBehaviour {
 			sliding = false;
 			spriteHolder.transform.Rotate(Vector3.back * 90 * face.x);
 			stunned = true;
-			Invoke("Unoof",.1f);
+			Invoke("Unoof",.6f);
 		} else {
             spriteHolder.GetComponent<SpriteRenderer>().sprite = kickSprite;
 			charging = false;
 			kicking = true;
-			if(!hit) Invoke("Unkick",.5f);
+			if(!hit) Invoke("Unkick",.35f);
 			else hit = false;
 		}
 	}
 
 	void Unkick(){
 		CancelInvoke("Unkick");//safety reasons
-		if((Random.value > .25f || chargedTime < .3f)) {LandKick(); return;}
+		if((Random.value > .1f || chargedTime < .3f)) {LandKick(); return;}
 		kicking = false;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
 		stunned = true;
-		Invoke("Unoof",chargedTime);
+		Invoke("Unoof",.5f);
 
 		chargedTime = 0;
 	}
@@ -312,9 +327,11 @@ public class PMove : MonoBehaviour {
 
 
 
-
-        spriteHolder.GetComponent<SpriteRenderer>().sprite =
-        		 walkSprites[(int)((Time.time * (travel == TS.running ? 6 : 4)) % walkSprites.Length)];
+		if(tarVelo.magnitude > .3f && dragTileNum == 0)
+		{
+	        spriteHolder.GetComponent<SpriteRenderer>().sprite =
+	        		 walkSprites[(int)((Time.time * (travel == TS.running ? 6 : 4)) % walkSprites.Length)];
+		}
 		//print(Time.time.ToString() + " : " + ((Time.time * 4) % walkSprites.Length).ToString() + " > " + ((int)(( 4 * Time.time) % walkSprites.Length)).ToString());
 
 		tarVelo = new Vector3(joy.x,0,joy.z);
@@ -364,8 +381,13 @@ public class PMove : MonoBehaviour {
 		} else {
 			transform.position += velo * (mSpeed / (diagonalC + 1));
 		}*/
+		if(dragTileNum == 0)
+			transform.position += velo * (mSpeed / (diagonalC + 1));
+		else
+			transform.position += velo * (mSpeed * .5f / (diagonalC + 1));
 
-		transform.position += velo * (mSpeed / (diagonalC + 1));
+
+		transform.position = new Vector3(Mathf.Clamp(transform.position.x,-4.5f,4.5f),0,Mathf.Clamp(transform.position.z,-4,4));
 
 		if(velo.x > 0) face.x =  1;
 		if(velo.y < 0) face.x = -1;
@@ -395,7 +417,7 @@ public class PMove : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if (dragTileNum == 0 && other.CompareTag("PickupTile") && (Input.GetButton("pd"+idStr) || Input.GetKey(keys.a(idStr))))
+        if (dragTileNum == 0 && other.CompareTag("PickupTile") && (Input.GetButtonDown("pd"+idStr) || Input.GetKeyDown(keys.a(idStr))) && face.x == 1)
         {
             dragTileNum = other.gameObject.GetComponent<ObjT>().id;
             dragTileGO = Instantiate(dragTilePrefab, tileSpawn);
