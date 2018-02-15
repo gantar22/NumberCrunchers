@@ -123,4 +123,67 @@ public class keys : MonoBehaviour {
 		return KeyCode.JoystickButton1;
 	}
 
+
+	public static KeyCode x(string id){
+		#if UNITY_STANDALONE_WIN
+		if(id == "1"){
+			return KeyCode.Joystick1Button2;
+		}
+		if(id == "2"){
+			return KeyCode.Joystick2Button2;
+		}
+		if(id == "3"){
+			return KeyCode.Joystick3Button2;
+		}
+		if(id == "4"){
+			return KeyCode.Joystick4Button2;
+		}
+		#endif
+		#if UNITY_EDITOR_WIN
+		if(id == "1"){
+			return KeyCode.Joystick1Button2;
+		}
+		if(id == "2"){
+			return KeyCode.Joystick2Button2;
+		}
+		if(id == "3"){
+			return KeyCode.Joystick3Button2;
+		}
+		if(id == "4"){
+			return KeyCode.Joystick4Button2;
+		}
+		#endif
+		#if UNITY_STANDALONE_OSX
+		if(id == "1"){
+			return KeyCode.Joystick1Button18;
+		}
+		if(id == "2"){
+			return KeyCode.Joystick2Button18;
+		}
+		if(id == "3"){
+			return KeyCode.Joystick3Button18;
+		}
+		if(id == "4"){
+			return KeyCode.Joystick4Button18;
+		}
+		#endif
+		#if UNITY_EDITOR_OSX
+		if(id == "1"){
+			return KeyCode.Joystick1Button18;
+		}
+		if(id == "2"){
+			return KeyCode.Joystick2Button18;
+		}
+		if(id == "3"){
+			return KeyCode.Joystick3Button18;
+		}
+		if(id == "4"){
+			return KeyCode.Joystick4Button18;
+		}
+		#endif
+		return KeyCode.JoystickButton2;
+	}
+	
+
+
 }
