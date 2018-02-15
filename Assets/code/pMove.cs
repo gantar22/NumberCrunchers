@@ -229,12 +229,12 @@ public class PMove : MonoBehaviour {
 	}
 
 	public void GotKicked(float time){
-        GamePad.SetVibration((PlayerIndex)(id - 1), .5f,.5f);
+        GamePad.SetVibration((PlayerIndex)(id - 1), .2f,.2f);
 		if(stunned) return;
 		stunned = true;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
 		Invoke("Unoof",time + 1f);
-		Invoke("unshake",.3f);
+		Invoke("unshake",.1f);
 
 	}
 
