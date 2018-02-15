@@ -33,7 +33,7 @@ GameObject:
   m_IsActive: 1
 --- !u!1 &1167066103222688
 GameObject:
-  m_ObjectHideFlags: 0
+  m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
@@ -42,6 +42,21 @@ GameObject:
   - component: {fileID: 212524729876277350}
   m_Layer: 8
   m_Name: SpriteHolder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1323067529509732
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4203409308250658}
+  m_Layer: 8
+  m_Name: spriteHolderHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68,13 +83,27 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1167066103222688}
-  m_LocalRotation: {x: 0.2588191, y: 0, z: 0, w: 0.9659258}
+  m_LocalRotation: {x: 0.2588191, y: -0, z: -0, w: 0.9659258}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children: []
+  m_Father: {fileID: 4203409308250658}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
+--- !u!4 &4203409308250658
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1323067529509732}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4135473540429858}
   m_Father: {fileID: 4855595946465696}
   m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 30, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4767219739824546
 Transform:
   m_ObjectHideFlags: 1
@@ -99,7 +128,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4767219739824546}
-  - {fileID: 4135473540429858}
+  - {fileID: 4203409308250658}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -222,25 +251,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteHolder: {fileID: 1167066103222688}
-  mSpeed: 0.15
-  rampFactor: 5
+  mSpeed: 0.12
+  rampFactor: 6
   dragFactor: 100
   maxSpeed: 1
-  chargeSprite: {fileID: 21300000, guid: eaea0d1a5f6374c5c8d16aaf33af64e5, type: 3}
-  kickSprite: {fileID: 21300000, guid: 27f84c191a6714f6980bdf1a97d164f6, type: 3}
-  slideSprite: {fileID: 21300000, guid: 3ebe562ffc2494f0ebecc323614ad018, type: 3}
-  standingSprite: {fileID: 21300000, guid: 1ee40fbc29fb9496f941cd057a764813, type: 3}
-  oofSprite: {fileID: 21300000, guid: 38dce2d9aa4604ac4a2c28e77101f722, type: 3}
-  dragSprite: {fileID: 21300000, guid: 3336ed16560ee4107bd0180978bbba33, type: 3}
+  chargeSprite: {fileID: 21300000, guid: 764dfa3f24429486182537917b55ee6b, type: 3}
+  kickSprite: {fileID: 21300000, guid: ac9b667336b5549f78ce16efa3f5a521, type: 3}
+  slideSprite: {fileID: 21300000, guid: 3eb2f0a109fbc424999237988b6cdd2c, type: 3}
+  standingSprite: {fileID: 21300000, guid: 869123c3b7c86465e8f01177669c42ee, type: 3}
+  oofSprite: {fileID: 21300000, guid: fcd73c0d165a047f59f4c5322ae0de98, type: 3}
+  dragSprite: {fileID: 21300000, guid: a3f356ee298fd4ce1b2b2ee9e1f190fc, type: 3}
   walkSprites:
-  - {fileID: 21300000, guid: aef84bb82095140acb7afd0ab4d55272, type: 3}
-  - {fileID: 21300000, guid: 3806eb9e25cfe425cb05c77e4df5554d, type: 3}
+  - {fileID: 21300000, guid: 9702afebf44a74758aaabcff7fa49c35, type: 3}
+  - {fileID: 21300000, guid: 0d0f887ef6f3f4af08307e36bf685d5f, type: 3}
   failTileExplosion: {fileID: 139366, guid: b185c1a9cf067374586d095111b15bd1, type: 2}
   timeToDash: 0.15
   kicking: 0
   chargedTime: 0
   stunned: 0
-  winSprite: {fileID: 21300000, guid: 05ac827b5a0d841f89cfb2f69b66daf9, type: 3}
+  winSprite: {fileID: 21300000, guid: 58b3bb70cd8c14c9aa5f0c7b1ae7b9e3, type: 3}
+  dodging: 0
   turning: 1
   standing: 1
   letgo: 1
@@ -249,6 +279,7 @@ MonoBehaviour:
   dragTilePrefab: {fileID: 1035017609491326, guid: 0a3abb53c977aff448347975cf696252,
     type: 2}
   dragTileSprite: {fileID: 21300000, guid: f5c643697e5a3bb48a7666a642389608, type: 3}
+  backSprite: {fileID: 21300000, guid: 58b3bb70cd8c14c9aa5f0c7b1ae7b9e3, type: 3}
 --- !u!114 &114625490797152586
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -269,7 +300,7 @@ SpriteRenderer:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1167066103222688}
   m_Enabled: 1
-  m_CastShadows: 0
+  m_CastShadows: 1
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
@@ -304,5 +335,5 @@ SpriteRenderer:
   m_Size: {x: 10.24, y: 7.68}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0

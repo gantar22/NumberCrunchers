@@ -287,7 +287,7 @@ public class PMove : MonoBehaviour {
 		}
 
 		if(sliding){
-			velo = Vector3.Lerp(velo,Vector3.zero,Time.deltaTime / velo.magnitude);
+			velo = Vector3.Lerp(velo,Vector3.zero,Time.deltaTime  * (Sqr(1.5f + velo.magnitude)));
 			transform.position += velo * mSpeed;
 			return;
 		} 
