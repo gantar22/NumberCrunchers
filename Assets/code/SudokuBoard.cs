@@ -71,7 +71,7 @@ public class SudokuBoard {
         {
             for (int j = 0; j < 9; j++)
             {
-                if (boardSquares[i,j].fillNum == 0)
+                if (boardSquares[i,j].fillNum == 0 || boardSquares[i, j].fillNum == -2)
                 {
                     unfilledSquares.Add(boardSquares[i, j]);
                 }

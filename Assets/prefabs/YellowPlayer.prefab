@@ -128,7 +128,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.9, y: 1, z: 0.7}
+  m_Size: {x: 0.9, y: 1, z: 0.3}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!82 &82079023686782622
 AudioSource:
@@ -254,6 +254,7 @@ MonoBehaviour:
   chargedTime: 0
   stunned: 0
   winSprite: {fileID: 21300000, guid: 21e044d0e6de09e4c95e8199c820c3de, type: 3}
+  dodging: 0
   turning: 1
   standing: 1
   letgo: 1
@@ -262,6 +263,7 @@ MonoBehaviour:
   dragTilePrefab: {fileID: 1035017609491326, guid: 0a3abb53c977aff448347975cf696252,
     type: 2}
   dragTileSprite: {fileID: 21300000, guid: 57a06d431fd947346b44392cef695cd5, type: 3}
+  backSprite: {fileID: 0}
 --- !u!212 &212376433980698362
 SpriteRenderer:
   m_ObjectHideFlags: 1
