@@ -311,12 +311,11 @@ public class PMove : MonoBehaviour {
         else if (sqr.ownedBy == 0 || sqr.ownedBy == -1)
         {
         	if(sqr.ownedBy == -1) {
-        		print("::");
         		gc.autoFillGotFilled = true;
 	            if(Random.value >= ((gc.sBoard.tilesForPlayer(id) + 1) / (gc.sBoard.totalTiles() + 1))){
 	            	stunned = true;
 	            	spriteHolder.GetComponent<SpriteRenderer>().sprite = winSprite;
-	            	Invoke("beginHigh",.2f);
+	            	Invoke("beginHigh",.4f);
 	            }
        		}
             sqr.fillNum = dragTileNum;
@@ -328,8 +327,6 @@ public class PMove : MonoBehaviour {
             dragTileGO.transform.position = new Vector3(sqr.xMinLim + gc.sBoard.xRes / 2, -0.6f, sqr.zMinLim + gc.sBoard.zRes / 2);
 
         }
-        print(new Vector2(gc.sBoard.tilesForPlayer(id) , gc.sBoard.totalTiles()));
-        print(sqr.ownedBy);
 
     }
 
@@ -384,7 +381,6 @@ public class PMove : MonoBehaviour {
 
 		Vector3 joy = new Vector3(Input.GetAxisRaw("HorizontalJ" + idStr),
 			                    0,Input.GetAxisRaw("VerticalJ"  + idStr));
-		//if(id == 2 && joy.magnitude > .9f) print(joy);
 		if(joy.magnitude == 0) timeSinceStanding = Time.time;
 		if(joy.magnitude == 1 && timeSinceStanding != 0) {
 			if(Time.time - timeSinceStanding < .5f) travel = TS.running;
