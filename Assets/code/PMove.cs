@@ -246,16 +246,20 @@ public class PMove : MonoBehaviour {
         }
         else if (sqr.ownedBy == 0)
         {
+            sqr.fillNum = dragTileNum;
+            sqr.ownedBy = id;
+            gc.sBoard.SetSquare(sqr);
+
             dragTileNum = 0;
             dragTileGO.transform.parent = null;
             dragTileGO.transform.position = new Vector3(sqr.xMinLim + gc.sBoard.xRes / 2, -0.6f, sqr.zMinLim + gc.sBoard.zRes / 2);
-            if (sqr.fillNum == -1)
+            if (sqr.fillNum == -2)
             {
                 powerUpCount++;
                 if (powerUpCount >= 3)
                 {
                     powerUpCount = 0;
-                    /* [KBK] Grant powerup */
+                    /* [NCW] Grant powerup */
                 }
             }
         }
