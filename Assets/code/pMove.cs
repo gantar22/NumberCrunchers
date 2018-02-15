@@ -96,6 +96,8 @@ public class PMove : MonoBehaviour {
     Sprite highlightsprite1;
     [SerializeField]
     Sprite highlightsprite2;
+    [SerializeField]
+    GameObject menu;
 
     private int dragTileNum = 0;
     private GameObject dragTileGO;
@@ -133,6 +135,8 @@ public class PMove : MonoBehaviour {
 	}
 
 	void Update () {
+
+		if(Input.GetKeyDown(keys.start(idStr))) {gc.gameObject.SetActive(false); menu.SetActive(true);}
 
 
 		//GetComponent<Animator>().SetBool("walking",false);
