@@ -123,4 +123,28 @@ public class SudokuBoard {
         Debug.Log(winList.ToString());
         return winList;
     }
+
+    public int totalTiles(){
+        int r = 0;
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (boardSquares[i, j].ownedBy > 0) r++;
+            }
+        }
+        return r;
+    }
+
+    public int tilesForPlayer(int id){
+        int r = 0;
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (boardSquares[i, j].ownedBy == id) r++;
+            }
+        }
+        return r;
+    }
 }

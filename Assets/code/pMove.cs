@@ -49,6 +49,10 @@ public class PMove : MonoBehaviour {
     public Sprite winSprite;
     [HideInInspector]
     public bool dodging;
+    [HideInInspector]
+    public bool highlighting;
+    [HideInInspector]
+    public int score;
 
     [SerializeField]
 	bool turning;
@@ -74,6 +78,10 @@ public class PMove : MonoBehaviour {
     private int oldX;
     private float timeSinceStanding;
     private int powerUpCount = 0;
+    private bool highlightHeld;
+
+    private GameObject gToOwn;
+    private Square sqrToOwn;
 
 
     [SerializeField]
@@ -84,9 +92,40 @@ public class PMove : MonoBehaviour {
     Sprite dragTileSprite;
     [SerializeField]
     Sprite backSprite;
+    [SerializeField]
+    Sprite highlightsprite1;
+    [SerializeField]
+    Sprite highlightsprite2;
 
     private int dragTileNum = 0;
     private GameObject dragTileGO;
+
+
+    void Awake(){
+    	StartCoroutine(PopUp());
+    }
+
+    IEnumerator PopUp(){
+    	float tp = 0;
+    	float dur = .3f;
+    	while(tp < dur){
+    		tp += Time.deltaTime;
+    		transform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one * 1.3f,tp / dur);
+
+    		yield return null;
+    	}
+    	tp = 0;
+    	dur = .1f;
+    	while(tp < dur){
+    		tp += Time.deltaTime;
+    		transform.localScale = Vector3.Lerp(Vector3.one * 1.3f, Vector3.one,tp / dur);
+    		yield return null;
+    	}
+
+    	transform.localScale = Vector3.one;
+    
+    }
+
 
     void Start () {
         id = GetComponent<ObjT>().id;
@@ -95,17 +134,23 @@ public class PMove : MonoBehaviour {
 
 	void Update () {
 
+
 		//GetComponent<Animator>().SetBool("walking",false);
 		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
 		transform.position = new Vector3(Mathf.Clamp(transform.position.x,-4.5f,4.5f),0,Mathf.Clamp(transform.position.z,-4,4));
 
+		if(highlighting && Input.GetKeyDown(keys.a(idStr))) HandleHighLight();
+		if(!highlighting || Input.GetKeyUp(keys.a(idStr))) highlightHeld = false;
 
-
-        if (dragTileNum != 0)                                  spriteHolder.GetComponent<SpriteRenderer>().sprite = dragSprite;
+		
+	    if (dragTileNum != 0)                                  spriteHolder.GetComponent<SpriteRenderer>().sprite = dragSprite;
         else if (!(kicking || stunned || sliding || charging)) spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
-		if((!kicking && !stunned) || sliding) Move(); else velo = Vector3.zero; 
+
+		if((!kicking && !stunned && !highlightHeld) || sliding) Move(); else velo = Vector3.zero; 
+		if (highlighting) spriteHolder.GetComponent<SpriteRenderer>().sprite = highlightsprite1;
+		if(highlightHeld && ((Time.time * 8) % 2 > .5f)) spriteHolder.GetComponent<SpriteRenderer>().sprite = highlightsprite2;
 		if(!(kicking || stunned || sliding || charging) && Input.GetKeyDown(keys.x(idStr))) dodge(); 
 		if(Input.GetKeyUp(keys.x(idStr))){dodging = false; stunned = false;spriteHolder.GetComponent<SpriteRenderer>().color  = new Color(1,1,1,1);}
 
@@ -114,7 +159,7 @@ public class PMove : MonoBehaviour {
 
 		Timers();
 
-        if (dragTileNum != 0 && (Input.GetButtonUp("pd"+idStr) || Input.GetKeyUp(keys.a(idStr)))) HandleTileDrop();
+        if (dragTileNum != 0 && !highlighting && (Input.GetButtonUp("pd"+idStr) || Input.GetKeyUp(keys.a(idStr)))) HandleTileDrop();
         if ((Input.GetKeyDown(keys.b(idStr)) || Input.GetButtonDown("b"+idStr)) && !kicking && !stunned) Kick();
 		if ((Input.GetKeyUp  (keys.b(idStr)) || Input.GetButtonUp  ("b"+idStr)) && !stunned) KickRelease(); //this may get called while in standing kick multiple times
 
@@ -136,6 +181,9 @@ public class PMove : MonoBehaviour {
 			}
 		}
 	}
+
+
+
 
 
 	void dodge(){
@@ -260,8 +308,17 @@ public class PMove : MonoBehaviour {
             explosion.GetComponentInChildren<SpriteRenderer>().sortingOrder = 2;
             Destroy(explosion, 1.0f);
         }
-        else if (sqr.ownedBy == 0)
+        else if (sqr.ownedBy == 0 || sqr.ownedBy == -1)
         {
+        	if(sqr.ownedBy == -1) {
+        		print("::");
+        		gc.autoFillGotFilled = true;
+	            if(Random.value >= ((gc.sBoard.tilesForPlayer(id) + 1) / (gc.sBoard.totalTiles() + 1))){
+	            	stunned = true;
+	            	spriteHolder.GetComponent<SpriteRenderer>().sprite = winSprite;
+	            	Invoke("beginHigh",.2f);
+	            }
+       		}
             sqr.fillNum = dragTileNum;
             sqr.ownedBy = id;
             gc.sBoard.SetSquare(sqr);
@@ -269,18 +326,49 @@ public class PMove : MonoBehaviour {
             dragTileNum = 0;
             dragTileGO.transform.parent = null;
             dragTileGO.transform.position = new Vector3(sqr.xMinLim + gc.sBoard.xRes / 2, -0.6f, sqr.zMinLim + gc.sBoard.zRes / 2);
-            if (sqr.fillNum == -2)
-            {
-                powerUpCount++;
-                if (powerUpCount >= 3)
-                {
-                    powerUpCount = 0;
-                    /* [NCW] Grant powerup */
-                }
-            }
+
         }
+        print(new Vector2(gc.sBoard.tilesForPlayer(id) , gc.sBoard.totalTiles()));
+        print(sqr.ownedBy);
+
     }
 
+    void beginHigh(){
+    	stunned = false;
+        highlighting = true;
+    	Invoke("Unhighlight",6);
+    }
+
+    void Unhighlight(){
+    	highlighting = false;
+    }
+
+
+	void HandleHighLight(){
+
+        Square sqr  = gc.sBoard.TransformToSquare(transform);
+
+        foreach(GameObject g in GameObject.FindGameObjectsWithTag("PickupTile")){
+        	if(gc.sBoard.TransformToSquare(g.transform) == sqr && sqr != null){
+
+        		highlightHeld = true;
+        		gToOwn = g;
+        		sqrToOwn = sqr;
+
+        		Invoke("Own",.15f);
+
+        	}
+        }
+
+	}
+
+
+	void Own(){
+		if(!highlightHeld) return;
+     	gToOwn.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = dragTileSprite;
+		sqrToOwn.ownedBy = id;
+		gc.sBoard.SetSquare(sqrToOwn); 
+	}
 
     void setMoving(){
     	CancelInvoke("setMoving");
@@ -446,7 +534,7 @@ public class PMove : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if (dragTileNum == 0 && other.CompareTag("PickupTile") && (Input.GetButtonDown("pd"+idStr) || Input.GetKeyDown(keys.a(idStr))) && face.x == 1)
+        if (dragTileNum == 0 && !highlighting && other.CompareTag("PickupTile") && (Input.GetButtonDown("pd"+idStr) || Input.GetKeyDown(keys.a(idStr))) && face.x == 1)
         {
             dragTileNum = other.gameObject.GetComponent<ObjT>().id;
             dragTileGO = Instantiate(dragTilePrefab, tileSpawn);

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using XInputDotNetPure;
+
 
 public class GameController : MonoBehaviour {
 
@@ -12,13 +14,17 @@ public class GameController : MonoBehaviour {
     public List<GameObject> players;
     public GameObject autoFillTilePrefab;
     public SudokuBoard sBoard;
+    [SerializeField]
+    public bool autoFillGotFilled;
 
     private bool gameEnd = false;
     //private float initWait = 2.0f;
     //private float autoFillTime = 0.05f;
     private float initWait = 1.0f;
     private float autoSpawnTime = 1.0f;
-    private float autoFillTime = 1.0f;
+    private float autoFillTime = 30.0f;
+
+    private float timeAutoStarted;
 
     void Start () {
         sBoard = new SudokuBoard();
@@ -51,10 +57,12 @@ public class GameController : MonoBehaviour {
             if (autoFillSquare != null)
             {
                 yield return new WaitForSeconds(autoSpawnTime);
+                timeAutoStarted = Time.time;
                 Vector3 fillPos = new Vector3(autoFillSquare.xMinLim + (sBoard.xRes / 2), -0.6f, autoFillSquare.zMinLim + (sBoard.zRes / 2));
                 GameObject autoFillTile = Instantiate(autoFillTilePrefab, fillPos, new Quaternion());
-                yield return new WaitForSeconds(autoFillTime);
-                autoFillTile.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = tileNumSprites[autoFillSquare.fillNum-1];
+                yield return new WaitUntil(() => (Time.time - timeAutoStarted > autoFillTime || autoFillGotFilled));
+                if (!autoFillGotFilled) autoFillTile.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = tileNumSprites[autoFillSquare.fillNum-1];
+                autoFillGotFilled = false;
             }
             else
             {
@@ -64,6 +72,7 @@ public class GameController : MonoBehaviour {
     }
 
     static public void QuitGame(){
+        for(int i = 0; i < 4; i++) GamePad.SetVibration((PlayerIndex)i,0,0);
     	Application.Quit();
     }
 }
