@@ -312,7 +312,7 @@ public class PMove : MonoBehaviour {
             explosion.GetComponentInChildren<SpriteRenderer>().sortingOrder = 2;
             Destroy(explosion, 1.0f);
         }
-        else if (sqr.ownedBy == 0 || sqr.ownedBy == -1)
+        else if (sqr.ownedBy == 0 || sqr.ownedBy == -1 || sqr.ownedBy == -2)
         {
         	if(sqr.ownedBy == -1) {
         		gc.autoFillGotFilled = true;
@@ -322,6 +322,17 @@ public class PMove : MonoBehaviour {
 	            	Invoke("beginHigh",.4f);
 	            }
        		}
+            if (sqr.fillNum == -2)
+            {
+                powerUpCount++;
+                if (powerUpCount >= 3)
+                {
+                    powerUpCount = 0;
+                    stunned = true;
+                    spriteHolder.GetComponent<SpriteRenderer>().sprite = winSprite;
+                    Invoke("beginHigh", .4f);
+                }
+            }
             sqr.fillNum = dragTileNum;
             sqr.ownedBy = id;
             gc.sBoard.SetSquare(sqr);
@@ -329,7 +340,7 @@ public class PMove : MonoBehaviour {
             dragTileNum = 0;
             dragTileGO.transform.parent = null;
             dragTileGO.transform.position = new Vector3(sqr.xMinLim + gc.sBoard.xRes / 2, -0.6f, sqr.zMinLim + gc.sBoard.zRes / 2);
-
+            
         }
 
     }
