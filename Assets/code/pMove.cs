@@ -53,6 +53,11 @@ public class PMove : MonoBehaviour {
     public bool highlighting;
     [HideInInspector]
     public int score;
+    public AudioClip kick;
+    public AudioClip pickup;
+    public AudioClip[] wrong;
+    public AudioClip correct;
+
 
     [SerializeField]
 	bool turning;
@@ -132,9 +137,10 @@ public class PMove : MonoBehaviour {
     void Start () {
         id = GetComponent<ObjT>().id;
         idStr = id.ToString();
-	}
+        transform.GetChild(2).GetComponent<AudioSource>().volume = 0;
+    }
 
-	void Update () {
+    void Update () {
 
 		if(Input.GetKeyDown(keys.start(idStr))) {gc.gameObject.SetActive(false); menu.SetActive(true);}
 
@@ -178,7 +184,7 @@ public class PMove : MonoBehaviour {
 								gc.players[i].GetComponent<PMove>().GotKicked(chargedTime);
 								playersHit += ((playersHit >> gc.players[i].GetComponent<ObjT>().id) + 1) << gc.players[i].GetComponent<ObjT>().id;
 								GetComponent<AudioSource>().volume = .5f + (chargedTime);
-								GetComponent<AudioSource>().Play();
+								GetComponent<AudioSource>().PlayOneShot(kick);
 								Camera.main.GetComponent<CameraShakeScript>().activate(.05f,.05f);
 							} 
 				}
@@ -282,6 +288,7 @@ public class PMove : MonoBehaviour {
 	}
 
 	public void GotKicked(float time){
+        Unhighlight();
         GamePad.SetVibration((PlayerIndex)(id - 1), .2f,.2f);
 		if(stunned) return;
 		stunned = true;
@@ -306,6 +313,7 @@ public class PMove : MonoBehaviour {
         {
             dragTileNum = 0;
             Destroy(dragTileGO);
+            GetComponent<AudioSource>().PlayOneShot(wrong[Random.Range(0,2)]);
             GameObject explosion = Instantiate(failTileExplosion, tileSpawn);
             explosion.transform.parent = null;
             explosion.GetComponentInChildren<SpriteRenderer>().sortingLayerName = "playground";
@@ -336,6 +344,7 @@ public class PMove : MonoBehaviour {
             sqr.fillNum = dragTileNum;
             sqr.ownedBy = id;
             gc.sBoard.SetSquare(sqr);
+            GetComponent<AudioSource>().PlayOneShot(correct);
 
             dragTileNum = 0;
             dragTileGO.transform.parent = null;
@@ -349,14 +358,16 @@ public class PMove : MonoBehaviour {
     	stunned = false;
         highlighting = true;
     	Invoke("Unhighlight",6);
+        transform.GetChild(2).GetComponent<AudioSource>().volume = 1;
     }
 
     void Unhighlight(){
     	highlighting = false;
+        transform.GetChild(2).GetComponent<AudioSource>().volume = 0;
     }
 
 
-	void HandleHighLight(){
+    void HandleHighLight(){
 
         Square sqr  = gc.sBoard.TransformToSquare(transform);
 
@@ -552,6 +563,7 @@ public class PMove : MonoBehaviour {
             dragTileGO.GetComponentInChildren<SpriteRenderer>().sprite = dragTileSprite;
             dragTileGO.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = other.gameObject.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite;
             dragTileGO.transform.GetChild(0).transform.localScale = new Vector3(0.15f, 0.14f, 0);
+            GetComponent<AudioSource>().PlayOneShot(pickup);
         }
     }
 }
