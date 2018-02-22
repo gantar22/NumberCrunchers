@@ -13,8 +13,8 @@ using UnityEngine;
 */
 public class SudokuBoard {
     
-    public float[] xLims = { -4.15f, 3.5f };
-    public float[] zLims = { -3.9f, 3.8f };
+    public float[] xLims = { -4.17f, 3.52f };
+    public float[] zLims = { -3.92f, 3.8f };
     public float xRes;
     public float zRes;
 
