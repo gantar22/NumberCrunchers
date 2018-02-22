@@ -2,7 +2,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using XInputDotNetPure;
+//using XInputDotNetPure;
 
 public class PMove : MonoBehaviour {
 
@@ -84,6 +84,7 @@ public class PMove : MonoBehaviour {
     private float timeSinceStanding;
     private int powerUpCount = 0;
     private bool highlightHeld;
+    private bool invincible;
 
     private GameObject gToOwn;
     private Square sqrToOwn;
@@ -162,7 +163,6 @@ public class PMove : MonoBehaviour {
 		if (highlighting) spriteHolder.GetComponent<SpriteRenderer>().sprite = highlightsprite1;
 		if(highlightHeld && ((Time.time * 8) % 2 > .5f)) spriteHolder.GetComponent<SpriteRenderer>().sprite = highlightsprite2;
 		if(!(kicking || stunned || sliding || charging) && Input.GetKeyDown(keys.x(idStr))) dodge(); 
-		if(Input.GetKeyUp(keys.x(idStr))){dodging = false; stunned = false;spriteHolder.GetComponent<SpriteRenderer>().color  = new Color(1,1,1,1);}
 
 		//print(id + (kicking ? " kicking " : "") + (stunned ? " stunned " : "") + (sliding ? " sliding" : ""));
 		//if(stunned) print(idStr);
@@ -179,13 +179,13 @@ public class PMove : MonoBehaviour {
         if (kicking){
 			for(int i = 0; i < gc.players.Count; i++){
 				if(gameObject != gc.players[i] && gc.players[i].GetComponent<BoxCollider>().bounds.Intersects(GetComponent<BoxCollider>().bounds)){
-							if(playersHit >> gc.players[i].GetComponent<ObjT>().id == 0 && !gc.players[i].GetComponent<PMove>().dodging)
+							if(playersHit >> gc.players[i].GetComponent<ObjT>().id == 0 && !(gc.players[i].GetComponent<PMove>().dodging || gc.players[i].GetComponent<PMove>().invincible))
 							{
 								gc.players[i].GetComponent<PMove>().GotKicked(chargedTime);
 								playersHit += ((playersHit >> gc.players[i].GetComponent<ObjT>().id) + 1) << gc.players[i].GetComponent<ObjT>().id;
 								GetComponent<AudioSource>().volume = .5f + (chargedTime);
 								GetComponent<AudioSource>().PlayOneShot(kick);
-								Camera.main.GetComponent<CameraShakeScript>().activate(.05f,.05f);
+								
 							} 
 				}
 			}
@@ -201,6 +201,13 @@ public class PMove : MonoBehaviour {
 		spriteHolder.GetComponent<SpriteRenderer>().sprite = backSprite;
 		spriteHolder.GetComponent<SpriteRenderer>().color  = new Color(.8f,.8f,.8f,.9f);
 		dodging = true;
+		Invoke("undodge",1f);
+	}
+
+	void undodge(){
+		dodging = false;
+		stunned = false;
+		spriteHolder.GetComponent<SpriteRenderer>().color  = new Color(1,1,1,1);
 	}
 
 
@@ -278,6 +285,19 @@ public class PMove : MonoBehaviour {
         spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
 	}
+	void UnoofI(){
+		invincible = true;
+		stunned = false;
+        spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
+   		spriteHolder.GetComponent<SpriteRenderer>().color  = new Color(.8f,.8f,.8f,.9f);
+
+        Invoke("UnInvincible",.45f);
+	}
+
+	void UnInvincible(){
+		spriteHolder.GetComponent<SpriteRenderer>().color  = new Color(1,1,1,1);
+		invincible = false;
+	}
 
 	public void LandKick(){
 		CancelInvoke("Unkick");
@@ -289,17 +309,18 @@ public class PMove : MonoBehaviour {
 
 	public void GotKicked(float time){
         Unhighlight();
-        GamePad.SetVibration((PlayerIndex)(id - 1), .2f,.2f);
+        //GamePad.SetVibration((PlayerIndex)(id - 1), .2f,.2f);
+        GetComponent<CameraShakeScript>().activate(.1f,.1f);
 		if(stunned) return;
 		stunned = true;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
-		Invoke("Unoof",time + 1f);
+		Invoke("UnoofI",time + 1f);
 		Invoke("unshake",.1f);
 
 	}
 
 	void unshake(){
-		GamePad.SetVibration((PlayerIndex)(id - 1), 0f,0f);
+	//	GamePad.SetVibration((PlayerIndex)(id - 1), 0f,0f);
 	}
 
     private void HandleTileDrop()
@@ -320,7 +341,7 @@ public class PMove : MonoBehaviour {
             explosion.GetComponentInChildren<SpriteRenderer>().sortingOrder = 2;
             Destroy(explosion, 1.0f);
         }
-        else if (sqr.ownedBy == 0 || sqr.ownedBy == -1 || sqr.ownedBy == -2)
+        else if (sqr.ownedBy == -1)//0 || sqr.ownedBy == -1 || sqr.ownedBy == -2)
         {
         	if(sqr.ownedBy == -1) {
         		gc.autoFillGotFilled = true;
@@ -403,7 +424,6 @@ public class PMove : MonoBehaviour {
 
 		//naive
 		//transform.position += new Vector3(Input.GetAxis("HorizontalJ") * mSpeed,0f,Input.GetAxis("VerticalJ") * mSpeed);
-
 
 		Vector3 joy = new Vector3(Input.GetAxisRaw("HorizontalJ" + idStr),
 			                    0,Input.GetAxisRaw("VerticalJ"  + idStr));
