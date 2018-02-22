@@ -239,10 +239,12 @@ public class PMove : MonoBehaviour {
 	void Kick(){
 		//GetComponent<Animator>().SetBool("walking",true);
 		if(Mathf.Pow(Sqr(velo.x)+Sqr(velo.z),.5f) > .1f){
-			kicking = true;
+			charging = true;
+			spriteHolder.GetComponent<SpriteRenderer>().sprite = chargeSprite;
+			/*kicking = true;
 			sliding = true;
             spriteHolder.GetComponent<SpriteRenderer>().sprite = slideSprite;
-			spriteHolder.transform.Rotate(Vector3.forward * 90 * face.x);
+			spriteHolder.transform.Rotate(Vector3.forward * 90 * face.x); */
 		} else {
 			charging = true;
             spriteHolder.GetComponent<SpriteRenderer>().sprite = chargeSprite;
