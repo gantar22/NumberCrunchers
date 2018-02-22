@@ -1,4 +1,3 @@
-﻿
 using System.Collections;
 using UnityEngine;
 
@@ -56,6 +55,8 @@ public class PMove : MonoBehaviour {
     public AudioClip pickup;
     public AudioClip[] wrong;
     public AudioClip correct;
+    public AudioClip wooHoo;
+    public AudioClip highlightSuccess;
 
 
     [SerializeField]
@@ -137,7 +138,6 @@ public class PMove : MonoBehaviour {
     void Start () {
         id = GetComponent<ObjT>().id;
         idStr = id.ToString();
-        transform.GetChild(2).GetComponent<AudioSource>().volume = 0;
     }
 
     void Update () {
@@ -150,7 +150,7 @@ public class PMove : MonoBehaviour {
 
 		transform.position = new Vector3(Mathf.Clamp(transform.position.x,-4.5f,4.5f),0,Mathf.Clamp(transform.position.z,-4,4));
 
-		if(highlighting && Input.GetKeyDown(keys.a(idStr))) HandleHighLight();
+		if(highlighting && (Input.GetKeyDown(keys.a(idStr)) || Input.GetButtonUp("h" + idStr))) HandleHighLight();
 		if(!highlighting || Input.GetKeyUp(keys.a(idStr))) highlightHeld = false;
 
 		
@@ -158,8 +158,8 @@ public class PMove : MonoBehaviour {
         else if (!(kicking || stunned || sliding || charging)) spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
 
 
-		if((!kicking && !stunned && !highlightHeld) || sliding) Move(); else velo = Vector3.zero; 
-		if (highlighting) spriteHolder.GetComponent<SpriteRenderer>().sprite = highlightsprite1;
+        if ((!kicking && !stunned) || sliding) Move(); else velo = Vector3.zero;
+        if (highlighting) spriteHolder.GetComponent<SpriteRenderer>().sprite = highlightsprite1;
 		if(highlightHeld && ((Time.time * 8) % 2 > .5f)) spriteHolder.GetComponent<SpriteRenderer>().sprite = highlightsprite2;
 		if(!(kicking || stunned || sliding || charging) && Input.GetKeyDown(keys.x(idStr))) dodge(); 
 
@@ -348,12 +348,13 @@ public class PMove : MonoBehaviour {
         {
         	if(sqr.ownedBy == -1) {
         		gc.autoFillGotFilled = true;
-	            if(Random.value >= ((gc.sBoard.tilesForPlayer(id) + 1) / (gc.sBoard.totalTiles() + 1))){
-	            	stunned = true;
-	            	spriteHolder.GetComponent<SpriteRenderer>().sprite = winSprite;
-	            	Invoke("beginHigh",.4f);
-	            }
-       		}
+                if (Random.value >= ((gc.sBoard.tilesForPlayer(id) + 1) / (gc.sBoard.totalTiles() + 1)))
+                {
+                    stunned = true;
+                    spriteHolder.GetComponent<SpriteRenderer>().sprite = winSprite;
+                    Invoke("beginHigh", .4f);
+                }
+            }
             /* if (sqr.fillNum == -2)
             {
                 powerUpCount++;
@@ -390,12 +391,11 @@ public class PMove : MonoBehaviour {
     	stunned = false;
         highlighting = true;
     	Invoke("Unhighlight",6);
-        transform.GetChild(2).GetComponent<AudioSource>().volume = 1;
+        GetComponent<AudioSource>().PlayOneShot(wooHoo);
     }
 
     void Unhighlight(){
     	highlighting = false;
-        transform.GetChild(2).GetComponent<AudioSource>().volume = 0;
     }
 
 
@@ -409,8 +409,8 @@ public class PMove : MonoBehaviour {
         		highlightHeld = true;
         		gToOwn = g;
         		sqrToOwn = sqr;
-
-        		Invoke("Own",.15f);
+                GetComponent<AudioSource>().PlayOneShot(highlightSuccess);
+                Invoke("Own",.15f);
 
         	}
         }
@@ -433,8 +433,8 @@ public class PMove : MonoBehaviour {
 
     void Move(){
 
-		//naive
-		//transform.position += new Vector3(Input.GetAxis("HorizontalJ") * mSpeed,0f,Input.GetAxis("VerticalJ") * mSpeed);
+        //naive
+        //transform.position += new Vector3(Input.GetAxis("HorizontalJ") * mSpeed,0f,Input.GetAxis("VerticalJ") * mSpeed);
 
 		Vector3 joy = new Vector3(Input.GetAxisRaw("HorizontalJ" + idStr),
 			                    0,Input.GetAxisRaw("VerticalJ"  + idStr));
@@ -462,9 +462,9 @@ public class PMove : MonoBehaviour {
 
 		if(charging) return;
 
-		//if(joy.magnitude > .01f) GetComponent<Animator>().SetBool("walking",true);
+        //if(joy.magnitude > .01f) GetComponent<Animator>().SetBool("walking",true);
 
-		/*
+        /*
 		if(joy.magnitude < .1f) {
 			travel = TS.standing;
 
@@ -498,7 +498,7 @@ public class PMove : MonoBehaviour {
 
 
 
-		if(tarVelo.magnitude > .3f && dragTileNum == 0)
+        if (tarVelo.magnitude > .3f && dragTileNum == 0)
 		{
 	        spriteHolder.GetComponent<SpriteRenderer>().sprite =
 	        		 walkSprites[(int)((Time.time * (travel == TS.running ? 6 : 4)) % walkSprites.Length)];
@@ -552,14 +552,12 @@ public class PMove : MonoBehaviour {
 		} else {
 			transform.position += velo * (mSpeed / (diagonalC + 1));
 		}*/
-		if(dragTileNum == 0)
-			transform.position += velo * (mSpeed / (diagonalC + 1));
-		else
-			transform.position += velo * (mSpeed * .5f / (diagonalC + 1));
+		if(dragTileNum == 0) transform.position += velo * (mSpeed / (diagonalC + 1));
+        else transform.position += velo * (mSpeed * .5f / (diagonalC + 1));
 
 
 
-		if(velo.x > 0) face.x =  1;
+        if (velo.x > 0) face.x =  1;
 		if(velo.y < 0) face.x = -1;
 		if(velo.z > 0) face.z =  1;
 		if(velo.z < 0) face.z = -1;
