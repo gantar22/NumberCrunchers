@@ -18,11 +18,12 @@ public class GameController : MonoBehaviour {
     public bool autoFillGotFilled;
 
     private bool gameEnd = false;
-    private float autoSpawnTime = 1.0f;
-    //private float initWait = 1.0f;
+    //private float initWait = 0.05f;
     //private float autoFillTime = 0.05f;
+    //private float autoSpawnTime = 0.05f;
     private float initWait = 2.0f;
     private float autoFillTime = 30.0f;
+    private float autoSpawnTime = 1.0f;
 
     private float timeAutoStarted;
 
