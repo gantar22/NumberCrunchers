@@ -2194,6 +2194,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gc: {fileID: 1498760892}
+  skipBut: {fileID: 1322387528}
 --- !u!328 &985581728
 VideoPlayer:
   m_ObjectHideFlags: 0
@@ -2602,7 +2603,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Start (... For Real This Time)
+  m_Text: Skip
 --- !u!222 &1224389372
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -3108,8 +3109,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 298, y: -186}
-  m_SizeDelta: {x: 200, y: 30}
+  m_AnchoredPosition: {x: 329, y: -197}
+  m_SizeDelta: {x: 45, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1322387530
 MonoBehaviour:
