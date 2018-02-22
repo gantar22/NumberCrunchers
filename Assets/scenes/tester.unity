@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44776624, g: 0.49344486, b: 0.55227286, a: 1}
+  m_IndirectSpecularColor: {r: 0.44776642, g: 0.49344504, b: 0.5522731, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -2194,7 +2194,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gc: {fileID: 1498760892}
-  skipBut: {fileID: 1322387528}
+  skipBut: {fileID: 0}
 --- !u!328 &985581728
 VideoPlayer:
   m_ObjectHideFlags: 0
