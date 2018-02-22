@@ -36,6 +36,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4450354342890862}
   - component: {fileID: 212830824773139884}
+  - component: {fileID: 114838168419345088}
   m_Layer: 0
   m_Name: SpriteHolder
   m_TagString: Untagged
@@ -113,6 +114,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 6
   typ: 2
+--- !u!114 &114838168419345088
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1665393707214400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99a945a12ae9e5b4c80a06528654c5eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  c1: {r: 1, g: 0, b: 0, a: 1}
+  c2: {r: 0, g: 0, b: 0, a: 1}
+  period: 0.8
 --- !u!212 &212380818862053768
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -192,7 +207,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: d966fdd12bdc9cc42b146d3c7463657a, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 0, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
