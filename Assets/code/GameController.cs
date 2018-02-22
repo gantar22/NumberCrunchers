@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-using XInputDotNetPure;
-
 
 public class GameController : MonoBehaviour {
 
@@ -72,8 +70,8 @@ public class GameController : MonoBehaviour {
         }
     }
 
-    static public void QuitGame(){
-        for(int i = 0; i < 4; i++) GamePad.SetVibration((PlayerIndex)i,0,0);
-    	Application.Quit();
-    }
+    //static public void QuitGame(){
+    //    for(int i = 0; i < 4; i++) GamePad.SetVibration((PlayerIndex)i,0,0);
+    //	Application.Quit();
+    //}
 }

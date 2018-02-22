@@ -1,8 +1,6 @@
 ﻿
-﻿using System.Collections;
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
-using XInputDotNetPure;
 
 public class PMove : MonoBehaviour {
 
@@ -289,7 +287,7 @@ public class PMove : MonoBehaviour {
 
 	public void GotKicked(float time){
         Unhighlight();
-        GamePad.SetVibration((PlayerIndex)(id - 1), .2f,.2f);
+        //GamePad.SetVibration((PlayerIndex)(id - 1), .2f,.2f);
 		if(stunned) return;
 		stunned = true;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
@@ -299,7 +297,7 @@ public class PMove : MonoBehaviour {
 	}
 
 	void unshake(){
-		GamePad.SetVibration((PlayerIndex)(id - 1), 0f,0f);
+		//GamePad.SetVibration((PlayerIndex)(id - 1), 0f,0f);
 	}
 
     private void HandleTileDrop()
