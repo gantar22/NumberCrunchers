@@ -354,7 +354,7 @@ public class PMove : MonoBehaviour {
 	            	Invoke("beginHigh",.4f);
 	            }
        		}
-            if (sqr.fillNum == -2)
+            /* if (sqr.fillNum == -2)
             {
                 powerUpCount++;
                 if (powerUpCount >= 3)
@@ -364,7 +364,7 @@ public class PMove : MonoBehaviour {
                     spriteHolder.GetComponent<SpriteRenderer>().sprite = winSprite;
                     Invoke("beginHigh", .4f);
                 }
-            }
+            } */
             sqr.fillNum = dragTileNum;
             sqr.ownedBy = id;
             gc.sBoard.SetSquare(sqr);
@@ -373,6 +373,13 @@ public class PMove : MonoBehaviour {
             dragTileNum = 0;
             dragTileGO.transform.parent = null;
             dragTileGO.transform.position = new Vector3(sqr.xMinLim + gc.sBoard.xRes / 2, -0.6f, sqr.zMinLim + gc.sBoard.zRes / 2);
+            foreach(GameObject g in GameObject.FindGameObjectsWithTag("PickupTile")){
+	        	if(gc.sBoard.TransformToSquare(g.transform) == sqr && g.GetComponent<ObjT>() != null && g.GetComponent<ObjT>().id == -1f){
+
+	        		Destroy(g,.1f);
+
+	        	}
+       		}
             
         }
 
