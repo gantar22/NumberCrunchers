@@ -49,7 +49,7 @@ public class GameController : MonoBehaviour {
 
     void Update()
     {
-        if (gameEnd && !winnerCalc && false)
+        if (gameEnd && !winnerCalc)
         {
             List<int> winners = sBoard.GetWinnerList();
             for (int i = 0; i < winners.Count; i++)
@@ -72,11 +72,12 @@ public class GameController : MonoBehaviour {
                 autoFillTime -= 3;
             }
             Square autoFillSquare = sBoard.FillRandSquare();
+
+            yield return new WaitForSeconds(autoSpawnTime + Random.value);
             if (autoFillSquare != null)
             {
 
                 na[autoFillSquare.solNum - 1]++;
-                yield return new WaitForSeconds(autoSpawnTime + Random.value);
                 timeAutoStarted = Time.time;
                 Vector3 fillPos = new Vector3(autoFillSquare.xMinLim + (sBoard.xRes / 2), -0.6f, autoFillSquare.zMinLim + (sBoard.zRes / 2));
                 GameObject autoFillTile = Instantiate(autoFillTilePrefab, fillPos, new Quaternion());

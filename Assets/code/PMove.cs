@@ -363,6 +363,7 @@ public class PMove : MonoBehaviour {
 	            if(Random.value >= ((gc.sBoard.tilesForPlayer(id) + 1) / (gc.sBoard.totalTiles() + 1))){
 	            	stunned = true;
 	            	spriteHolder.GetComponent<SpriteRenderer>().sprite = winSprite;
+       				GetComponent<AudioSource>().PlayOneShot(wooHoo,.1f);
 	            	Invoke("beginHigh",.4f);
 	            }
 	        }
@@ -403,7 +404,6 @@ public class PMove : MonoBehaviour {
     	stunned = false;
         highlighting = true;
     	Invoke("Unhighlight",6);
-        GetComponent<AudioSource>().PlayOneShot(wooHoo);
     }
 
     void Unhighlight(){
