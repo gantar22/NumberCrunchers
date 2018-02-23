@@ -347,7 +347,7 @@ public class PMove : MonoBehaviour {
         else if (sqr.ownedBy == -1)//0 || sqr.ownedBy == -1 || sqr.ownedBy == -2)
         {
         	if(sqr.ownedBy == -1) {
-        		gc.autoFillGotFilled = true;
+        		gc.fill(sqr.solNum);
 	            if(Random.value >= ((gc.sBoard.tilesForPlayer(id) + 1) / (gc.sBoard.totalTiles() + 1))){
 	            	stunned = true;
 	            	spriteHolder.GetComponent<SpriteRenderer>().sprite = winSprite;
@@ -372,7 +372,7 @@ public class PMove : MonoBehaviour {
 
             dragTileNum = 0;
             dragTileGO.transform.parent = null;
-            dragTileGO.transform.position = new Vector3(sqr.xMinLim + gc.sBoard.xRes / 2 + .09f, -0.6f, sqr.zMinLim + gc.sBoard.zRes / 2 - .04f);
+            dragTileGO.transform.position = new Vector3(sqr.xMinLim + gc.sBoard.xRes / 2, -0.6f, sqr.zMinLim + gc.sBoard.zRes / 2);
             //dragTileGO.transform.position = new Vector3(gc.sBoard.xLims[0] + (gc.sBoard.xRes / 2), -0.6f, sqr.zMinLim + (gc.sBoard.zRes / 2));
             foreach(GameObject g in GameObject.FindGameObjectsWithTag("PickupTile")){
 	        	if(gc.sBoard.TransformToSquare(g.transform) == sqr && g.GetComponent<ObjT>() != null && g.GetComponent<ObjT>().id == -1f){

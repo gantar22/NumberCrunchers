@@ -20,12 +20,13 @@ public class GameController : MonoBehaviour {
 
 
     private Dictionary<int,int> numbersOut;
+    private int[] na = new int[9]; //active tiles
     private bool gameEnd = false;
     //private float initWait = 0.05f;
     //private float autoFillTime = 0.05f;
     //private float autoSpawnTime = 0.05f;
     private float initWait = 2.0f;
-    private float autoFillTime = 30.0f;
+    private float autoFillTime = 15.0f;
 
     private int tilesFilled;
 
@@ -66,11 +67,16 @@ public class GameController : MonoBehaviour {
         while (!gameEnd)
         {   
             tilesFilled++;
-            if(tilesFilled % 4 == 0) StartCoroutine(AutoFillTiles());
+            if(tilesFilled % 4 == 0 && tilesFilled < 15) {
+                StartCoroutine(AutoFillTiles());
+                autoFillTime -= 3;
+            }
             Square autoFillSquare = sBoard.FillRandSquare();
             if (autoFillSquare != null)
             {
-                yield return new WaitForSeconds(autoSpawnTime);
+
+                na[autoFillSquare.solNum - 1]++;
+                yield return new WaitForSeconds(autoSpawnTime + Random.value);
                 timeAutoStarted = Time.time;
                 Vector3 fillPos = new Vector3(autoFillSquare.xMinLim + (sBoard.xRes / 2), -0.6f, autoFillSquare.zMinLim + (sBoard.zRes / 2));
                 GameObject autoFillTile = Instantiate(autoFillTilePrefab, fillPos, new Quaternion());
@@ -79,20 +85,40 @@ public class GameController : MonoBehaviour {
                     {t.gameObject.SetActive(true);
                     numbersOut[autoFillSquare.solNum]++;}
                 }
-                yield return new WaitUntil(() => (Time.time - timeAutoStarted > autoFillTime || autoFillGotFilled));
+                yield return new WaitUntil(() => (Time.time - timeAutoStarted > (autoFillTime + Random.value)) || na[autoFillSquare.solNum - 1] == 0);
+                if (na[autoFillSquare.solNum - 1] != 0) 
+                {
+                    na[autoFillSquare.solNum - 1]--;
+                    if(autoFillTile != null){
+                        autoFillTile.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = tileNumSprites[autoFillSquare.fillNum-1];
+                        autoFillTile.GetComponentsInChildren<flashScript>()[0].enabled = false;
+                        foreach(Transform t in autoFillTile.transform) t.gameObject.GetComponent<SpriteRenderer>().color = new Color(0,0,0,1);
+                    }
+                }
                 foreach(Transform t in tileStack.transform) {
                     
                     if(t.gameObject.GetComponent<ObjT>().id == autoFillSquare.solNum) 
-                        {print(numbersOut[autoFillSquare.solNum]); if(--numbersOut[autoFillSquare.solNum] == 0) t.gameObject.SetActive(false);}
+                        {
+                            if(na[autoFillSquare.solNum - 1] == 0) t.gameObject.SetActive(false);
+                        }
                 }                
-                if (!autoFillGotFilled) autoFillTile.transform.GetChild(1).GetComponent<SpriteRenderer>().sprite = tileNumSprites[autoFillSquare.fillNum-1];
+        
+                
                 autoFillGotFilled = false;
             }
-            else
+            else 
             {
-                gameEnd = true;
+                bool r = false;
+                foreach(int n in na){
+                    if(n != 0) r = true;
+                }
+                if (!r) gameEnd = true;
             }
         }
+    }
+
+    public void fill(int num){
+        na[num - 1]--;
     }
 
     static public void QuitGame(){
