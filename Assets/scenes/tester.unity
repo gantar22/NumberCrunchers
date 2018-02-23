@@ -1275,6 +1275,12 @@ Prefab:
       propertyPath: m_Color.a
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114332768041054170, guid: dad26a566e6c74948920ddebf722cd73,
+        type: 2}
+      propertyPath: dragTilePrefab
+      value: 
+      objectReference: {fileID: 1035017609491326, guid: 0a3abb53c977aff448347975cf696252,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: dad26a566e6c74948920ddebf722cd73, type: 2}
   m_IsPrefabParent: 0
