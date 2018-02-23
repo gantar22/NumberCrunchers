@@ -49,7 +49,7 @@ public class GameController : MonoBehaviour {
 
     void Update()
     {
-        if (gameEnd && !winnerCalc)
+        if (gameEnd && !winnerCalc && false)
         {
             List<int> winners = sBoard.GetWinnerList();
             for (int i = 0; i < winners.Count; i++)

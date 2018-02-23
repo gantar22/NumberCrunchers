@@ -193,7 +193,7 @@ public class PMove : MonoBehaviour {
 				}
 			}
 		}
-			if(highlightfade) {spriteHolder.GetComponent<SpriteRenderer>().sprite = (Time.time % .5f < .25f ? highlightsprite1 : walkSprites[0]);print(Time.time % 2 < 1);}
+		if(highlightfade) {spriteHolder.GetComponent<SpriteRenderer>().sprite = (Time.time % .5f < .25f ? highlightsprite1 : walkSprites[0]);print(Time.time % 2 < 1);}
 
 	}
 
@@ -407,6 +407,7 @@ public class PMove : MonoBehaviour {
     }
 
     void Unhighlight(){
+    	if(!highlighting) return;
     	highlightfade = true;	
     	Invoke("UnUnhighlight",2f);
     }
