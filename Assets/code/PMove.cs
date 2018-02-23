@@ -185,6 +185,7 @@ public class PMove : MonoBehaviour {
 								playersHit += ((playersHit >> gc.players[i].GetComponent<ObjT>().id) + 1) << gc.players[i].GetComponent<ObjT>().id;
 								GetComponent<AudioSource>().volume = .5f + (chargedTime);
 								GetComponent<AudioSource>().PlayOneShot(kick);
+								LandKick();
 								
 							} 
 				}
@@ -266,18 +267,18 @@ public class PMove : MonoBehaviour {
             spriteHolder.GetComponent<SpriteRenderer>().sprite = kickSprite;
 			charging = false;
 			kicking = true;
-			if(!hit) Invoke("Unkick",.35f);
+			if(!hit) Invoke("Unkick",.1f);
 			else hit = false;
 		}
 	}
 
 	void Unkick(){
 		CancelInvoke("Unkick");//safety reasons
-		if((Random.value > .1f || chargedTime < .3f)) {LandKick(); return;}
+		//if((Random.value > .1f || chargedTime < .3f)) {LandKick(); return;}
 		kicking = false;
-        spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
+        //spriteHolder.GetComponent<SpriteRenderer>().sprite = oofSprite;
 		stunned = true;
-		Invoke("Unoof",.5f);
+		Invoke("Unoof",1f);
 
 		chargedTime = 0;
 	}
@@ -305,7 +306,8 @@ public class PMove : MonoBehaviour {
 		CancelInvoke("Unkick");
 		kicking = false;
         spriteHolder.GetComponent<SpriteRenderer>().sprite = standingSprite;
-
+        stunned = true;
+        Invoke("Unoof",.25f);
 		chargedTime = 0;
 	}
 
