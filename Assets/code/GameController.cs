@@ -58,6 +58,7 @@ public class GameController : MonoBehaviour {
                 playerWinImg[i].enabled = true;
                 playerWinImg[i].sprite = players[winners[i]-1].GetComponent<PMove>().winSprite;
             }
+            gameEnd = false;
         }
     }
 
@@ -97,9 +98,9 @@ public class GameController : MonoBehaviour {
                 }
                 foreach(Transform t in tileStack.transform) {
                     
-                    if(t.gameObject.GetComponent<ObjT>().id == autoFillSquare.solNum) 
+                    if((t.gameObject.GetComponent<ObjT>().id == autoFillSquare.solNum) && tilesFilled < 15)
                         {
-                            if(na[autoFillSquare.solNum - 1] == 0) t.gameObject.SetActive(false);
+                            if (na[autoFillSquare.solNum - 1] == 0) t.gameObject.SetActive(false);
                         }
                 }                
         

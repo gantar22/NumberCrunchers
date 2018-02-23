@@ -1,4 +1,4 @@
-﻿ng System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 
 
@@ -353,6 +353,7 @@ public class PMove : MonoBehaviour {
 	            	spriteHolder.GetComponent<SpriteRenderer>().sprite = winSprite;
 	            	Invoke("beginHigh",.4f);
 	            }
+	        }
 
             /* if (sqr.fillNum == -2)
             {
