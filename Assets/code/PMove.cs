@@ -333,7 +333,11 @@ public class PMove : MonoBehaviour {
 
         Square sqr  = gc.sBoard.TransformToSquare(dragTileGO.transform);
 
-        if (sqr == null) return;
+        if (sqr == null) 
+        {
+            dragTileNum = 0;
+            Destroy(dragTileGO);
+        }
         else if (sqr.solNum != dragTileNum)
         {
             dragTileNum = 0;
@@ -586,7 +590,7 @@ public class PMove : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if (dragTileNum == 0 && !highlighting && other.CompareTag("PickupTile") && (Input.GetButtonDown("pd"+idStr) || Input.GetKeyDown(keys.a(idStr))))
+        if (dragTileNum == 0 && other.CompareTag("PickupTile") && (Input.GetButtonDown("pd"+idStr) || Input.GetKeyDown(keys.a(idStr))))
         {
         	face = new Vector3(1,face.y,face.z);
             dragTileNum = other.gameObject.GetComponent<ObjT>().id;
