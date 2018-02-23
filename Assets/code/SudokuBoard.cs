@@ -111,7 +111,7 @@ public class SudokuBoard {
             for (int j = 0; j < 9; j++)
             {
                 int own = boardSquares[i, j].ownedBy;
-                //Debug.Log(own);
+
                 if (own != 0 && own != -1) tileCount[own-1]++; 
             }
         }
@@ -121,8 +121,7 @@ public class SudokuBoard {
         {
             if (sortList[0] == tileCount[i]) winList.Add(i+1); 
         }
-       // Debug.Log(sortList.ToString());
-    //Debug.Log(winList.ToString());
+
         return winList;
     }
 
