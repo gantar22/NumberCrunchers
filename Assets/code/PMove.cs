@@ -151,7 +151,8 @@ public class PMove : MonoBehaviour {
 		transform.position = new Vector3(Mathf.Clamp(transform.position.x,-4.5f,4.5f),0,Mathf.Clamp(transform.position.z,-4,4));
 
 		if(highlighting && (Input.GetKeyDown(keys.a(idStr)) || Input.GetButtonUp("h" + idStr))) HandleHighLight();
-		if(!highlighting || Input.GetKeyUp(keys.a(idStr))) highlightHeld = false;
+		if(!highlighting) highlightHeld = false;
+
 
 		
 	    if (dragTileNum != 0)                                  spriteHolder.GetComponent<SpriteRenderer>().sprite = dragSprite;
@@ -419,7 +420,7 @@ public class PMove : MonoBehaviour {
 
 
 	void Own(){
-		if(!highlightHeld) return;
+		highlightHeld = false;
      	gToOwn.transform.GetChild(0).GetComponent<SpriteRenderer>().sprite = dragTileSprite;
 		sqrToOwn.ownedBy = id;
 		gc.sBoard.SetSquare(sqrToOwn); 
