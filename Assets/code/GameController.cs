@@ -23,12 +23,12 @@ public class GameController : MonoBehaviour {
     private int[] na = new int[9]; //active tiles
     private bool gameEnd = false;
     private bool winnerCalc = false;
-    private float initWait = 0.05f;
-    private float autoFillTime = 0.05f;
-    private float autoSpawnTime = 0.05f;
-    //private float initWait = 2.0f;
-    //private float autoFillTime = 30.0f;
-    //private float autoSpawnTime = 1.0f;
+    //private float initWait = 0.05f;
+    //private float autoFillTime = 0.05f;
+    //private float autoSpawnTime = 0.05f;
+    private float initWait = 2.0f;
+    private float autoFillTime = 15.0f;
+    private float autoSpawnTime = 1.0f;
 
     private int tilesFilled;
 

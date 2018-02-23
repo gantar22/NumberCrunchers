@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44776642, g: 0.49344504, b: 0.5522731, a: 1}
+  m_IndirectSpecularColor: {r: 0.44776624, g: 0.49344486, b: 0.55227286, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -1729,6 +1729,17 @@ Prefab:
       propertyPath: m_Name
       value: PickupTile6
       objectReference: {fileID: 0}
+    - target: {fileID: 212749631734265390, guid: 3a8c19bc140b9434b9adbc36cea922aa,
+        type: 2}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: fb791d746b093074fb3157397124bded,
+        type: 3}
+    - target: {fileID: 114218843164164390, guid: 3a8c19bc140b9434b9adbc36cea922aa,
+        type: 2}
+      propertyPath: id
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3a8c19bc140b9434b9adbc36cea922aa, type: 2}
   m_IsPrefabParent: 0
@@ -2200,7 +2211,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gc: {fileID: 1498760892}
-  skipBut: {fileID: 0}
+  skipBut: {fileID: 1322387528}
 --- !u!328 &985581728
 VideoPlayer:
   m_ObjectHideFlags: 0

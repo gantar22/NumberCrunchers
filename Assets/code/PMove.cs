@@ -585,8 +585,9 @@ public class PMove : MonoBehaviour {
 
     private void OnTriggerStay(Collider other)
     {
-        if (dragTileNum == 0 && !highlighting && other.CompareTag("PickupTile") && (Input.GetButtonDown("pd"+idStr) || Input.GetKeyDown(keys.a(idStr))) && face.x == 1)
+        if (dragTileNum == 0 && !highlighting && other.CompareTag("PickupTile") && (Input.GetButtonDown("pd"+idStr) || Input.GetKeyDown(keys.a(idStr))))
         {
+        	face = new Vector3(1,face.y,face.z);
             dragTileNum = other.gameObject.GetComponent<ObjT>().id;
             dragTileGO = Instantiate(dragTilePrefab, tileSpawn);
             dragTileGO.GetComponentInChildren<SpriteRenderer>().sprite = dragTileSprite;
