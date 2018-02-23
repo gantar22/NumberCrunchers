@@ -22,16 +22,15 @@ public class GameController : MonoBehaviour {
     private Dictionary<int,int> numbersOut;
     private int[] na = new int[9]; //active tiles
     private bool gameEnd = false;
-    //private float initWait = 0.05f;
-    //private float autoFillTime = 0.05f;
-    //private float autoSpawnTime = 0.05f;
-    private float initWait = 2.0f;
-    private float autoFillTime = 15.0f;
+    private bool winnerCalc = false;
+    private float initWait = 0.05f;
+    private float autoFillTime = 0.05f;
+    private float autoSpawnTime = 0.05f;
+    //private float initWait = 2.0f;
+    //private float autoFillTime = 30.0f;
+    //private float autoSpawnTime = 1.0f;
 
     private int tilesFilled;
-
-    private float autoSpawnTime = 1.0f;
-
 
     private float timeAutoStarted;
 
@@ -50,7 +49,7 @@ public class GameController : MonoBehaviour {
 
     void Update()
     {
-        if (gameEnd)
+        if (gameEnd && !winnerCalc)
         {
             List<int> winners = sBoard.GetWinnerList();
             for (int i = 0; i < winners.Count; i++)
@@ -58,6 +57,7 @@ public class GameController : MonoBehaviour {
                 playerWinImg[i].enabled = true;
                 playerWinImg[i].sprite = players[winners[i]-1].GetComponent<PMove>().winSprite;
             }
+            winnerCalc = true;
         }
     }
 
