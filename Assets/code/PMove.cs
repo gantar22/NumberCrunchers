@@ -85,6 +85,7 @@ public class PMove : MonoBehaviour {
     private int powerUpCount = 0;
     private bool highlightHeld;
     private bool invincible;
+    private bool highlightfade = false;
 
     private GameObject gToOwn;
     private Square sqrToOwn;
@@ -145,6 +146,7 @@ public class PMove : MonoBehaviour {
 		if(Input.GetKeyDown(keys.start(idStr))) {gc.gameObject.SetActive(false); menu.SetActive(true);}
 
 
+
 		//GetComponent<Animator>().SetBool("walking",false);
 		if(gc == null) gc = GameObject.FindWithTag("GameController").GetComponent<GameController>();
 
@@ -191,7 +193,10 @@ public class PMove : MonoBehaviour {
 				}
 			}
 		}
+			if(highlightfade) {spriteHolder.GetComponent<SpriteRenderer>().sprite = (Time.time % .5f < .25f ? highlightsprite1 : walkSprites[0]);print(Time.time % 2 < 1);}
+
 	}
+
 
 
 
@@ -402,6 +407,11 @@ public class PMove : MonoBehaviour {
     }
 
     void Unhighlight(){
+    	highlightfade = true;	
+    	Invoke("UnUnhighlight",2f);
+    }
+    void UnUnhighlight(){
+    	highlightfade = false;
     	highlighting = false;
     }
 
